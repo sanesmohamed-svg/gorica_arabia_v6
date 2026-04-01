@@ -235,6 +235,9 @@ tr:hover td{background:var(--blue-lt)}
 .f12{font-size:12px}.f11{font-size:11px}.f10{font-size:10px}
 .info-box{background:var(--blue-lt);border:1px solid var(--blue-lt2);border-radius:var(--rr);padding:9px 13px;font-size:11px;color:var(--blue);margin-bottom:12px}
 .divider{height:1px;background:var(--border);margin:14px 0}
+.sort-icon{color:var(--txt3);font-size:9px;margin-left:2px}
+th.sort-asc .sort-icon::after{content:" ▲";color:var(--blue)}
+th.sort-desc .sort-icon::after{content:" ▼";color:var(--blue)}
 @media(max-width:1100px){.sup-grid,.col3{grid-template-columns:1fr}.col2{grid-template-columns:1fr}}
 </style>
 </head>
@@ -303,21 +306,55 @@ tr:hover td{background:var(--blue-lt)}
 <!-- ════════ OVERVIEW ════════ -->
 <div id="pane-overview" class="pane on">
   <div class="kgrid" id="ov-kpis"></div>
-  <!-- MH comparison chart - ALL work orders -->
+  <!-- MH comparison chart with horizontal scroll -->
   <div class="card mb20">
-    <div class="card-title">Estimated vs Actual Man Hours — All Work Orders</div>
-    <div style="height:260px;position:relative"><canvas id="ch-mh-ov"></canvas></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div class="card-title" style="margin:0">Estimated vs Actual Man Hours — All Work Orders</div>
+      <div style="font-size:10px;color:var(--txt3)">← Scroll horizontally to see all →</div>
+    </div>
+    <div style="overflow-x:auto;overflow-y:hidden;cursor:grab;user-select:none" id="mh-chart-scroll">
+      <div id="mh-chart-inner" style="min-width:100%">
+        <canvas id="ch-mh-ov" style="display:block"></canvas>
+      </div>
+    </div>
   </div>
-  <div class="col2 mb20">
-    <div class="card"><div class="card-title">Production by Vehicle Type</div><div style="height:190px;position:relative"><canvas id="ch-type"></canvas></div></div>
-    <div class="card"><div class="card-title">Stage Activity Today</div><div style="height:190px;position:relative"><canvas id="ch-stage"></canvas></div></div>
+  <!-- Only vehicle type donut remains -->
+  <div class="card mb20" style="max-width:420px">
+    <div class="card-title">Production by Vehicle Type</div>
+    <div style="height:200px;position:relative"><canvas id="ch-type"></canvas></div>
   </div>
+  <!-- Sortable/filterable Work Orders table -->
   <div class="sh"><div class="sh-title">All Work Orders</div><div class="sh-line"></div></div>
   <div class="card mb20">
-    <div class="tw"><table><thead><tr>
-      <th>Serial</th><th>Work Order</th><th>Customer</th><th>Vehicle Type</th>
-      <th>Delivery</th><th>Supervisor</th><th>Est. Man Hrs</th><th>Actual Hrs</th><th>Usage</th><th>Status</th>
-    </tr></thead><tbody id="ov-jobs"></tbody></table></div>
+    <!-- Filter bar -->
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center">
+      <input id="ov-f-sn"       placeholder="🔍 Serial"       style="width:80px;padding:5px 8px;font-size:11px" oninput="applyOvFilters()">
+      <input id="ov-f-wo"       placeholder="🔍 Work Order"    style="width:110px;padding:5px 8px;font-size:11px" oninput="applyOvFilters()">
+      <input id="ov-f-cust"     placeholder="🔍 Customer"      style="width:120px;padding:5px 8px;font-size:11px" oninput="applyOvFilters()">
+      <input id="ov-f-type"     placeholder="🔍 Vehicle Type"  style="width:120px;padding:5px 8px;font-size:11px" oninput="applyOvFilters()">
+      <input id="ov-f-sup"      placeholder="🔍 Supervisor"    style="width:110px;padding:5px 8px;font-size:11px" oninput="applyOvFilters()">
+      <select id="ov-f-status"  style="width:110px;padding:5px 8px;font-size:11px" onchange="applyOvFilters()">
+        <option value="">All Status</option>
+        <option>In Progress</option><option>Completed</option><option>On Hold</option>
+      </select>
+      <button class="btn btn-s btn-xs" onclick="clearOvFilters()">✕ Clear</button>
+      <span id="ov-filter-count" class="f10 muted" style="margin-left:4px"></span>
+    </div>
+    <div class="tw"><table id="ov-table">
+      <thead><tr>
+        <th onclick="sortOvTable(0)" style="cursor:pointer">Serial <span class="sort-icon">⇅</span></th>
+        <th onclick="sortOvTable(1)" style="cursor:pointer">Work Order <span class="sort-icon">⇅</span></th>
+        <th onclick="sortOvTable(2)" style="cursor:pointer">Customer <span class="sort-icon">⇅</span></th>
+        <th onclick="sortOvTable(3)" style="cursor:pointer">Vehicle Type <span class="sort-icon">⇅</span></th>
+        <th onclick="sortOvTable(4)" style="cursor:pointer">Delivery <span class="sort-icon">⇅</span></th>
+        <th onclick="sortOvTable(5)" style="cursor:pointer">Supervisor <span class="sort-icon">⇅</span></th>
+        <th onclick="sortOvTable(6)" style="cursor:pointer">Est. Hrs <span class="sort-icon">⇅</span></th>
+        <th onclick="sortOvTable(7)" style="cursor:pointer">Actual Hrs <span class="sort-icon">⇅</span></th>
+        <th>Usage</th>
+        <th onclick="sortOvTable(9)" style="cursor:pointer">Status <span class="sort-icon">⇅</span></th>
+      </tr></thead>
+      <tbody id="ov-jobs"></tbody>
+    </table></div>
   </div>
 </div>
 
@@ -366,10 +403,32 @@ tr:hover td{background:var(--blue-lt)}
     <button class="btn btn-p btn-sm" id="btn-add-job" onclick="openJobMo()">+ Add Job Order</button>
   </div>
   <div class="card mb20">
-    <div class="tw"><table><thead><tr>
-      <th>Serial</th><th>Work Order</th><th>Customer</th><th>Vehicle Type</th>
-      <th>Delivery</th><th>Est. Man Hrs</th><th>Supervisor</th><th>Status</th><th>Actions</th>
-    </tr></thead><tbody id="jobs-tb"></tbody></table></div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center">
+      <input id="jf-sn"     placeholder="🔍 Serial"       style="width:80px;padding:5px 8px;font-size:11px;border:1.5px solid var(--border);border-radius:var(--rr);background:var(--bg3)" oninput="applyJobFilters()">
+      <input id="jf-wo"     placeholder="🔍 Work Order"   style="width:110px;padding:5px 8px;font-size:11px;border:1.5px solid var(--border);border-radius:var(--rr);background:var(--bg3)" oninput="applyJobFilters()">
+      <input id="jf-cust"   placeholder="🔍 Customer"     style="width:120px;padding:5px 8px;font-size:11px;border:1.5px solid var(--border);border-radius:var(--rr);background:var(--bg3)" oninput="applyJobFilters()">
+      <input id="jf-type"   placeholder="🔍 Vehicle Type" style="width:130px;padding:5px 8px;font-size:11px;border:1.5px solid var(--border);border-radius:var(--rr);background:var(--bg3)" oninput="applyJobFilters()">
+      <input id="jf-sup"    placeholder="🔍 Supervisor"   style="width:110px;padding:5px 8px;font-size:11px;border:1.5px solid var(--border);border-radius:var(--rr);background:var(--bg3)" oninput="applyJobFilters()">
+      <select id="jf-status" style="width:110px;padding:5px 8px;font-size:11px;border:1.5px solid var(--border);border-radius:var(--rr);background:var(--bg3)" onchange="applyJobFilters()">
+        <option value="">All Status</option><option>In Progress</option><option>Completed</option><option>On Hold</option>
+      </select>
+      <button class="btn btn-s btn-xs" onclick="clearJobFilters()">✕ Clear</button>
+      <span id="jf-count" class="f10 muted"></span>
+    </div>
+    <div class="tw"><table>
+      <thead><tr>
+        <th onclick="sortJobTable(0)" style="cursor:pointer">Serial <span class="sort-icon">⇅</span></th>
+        <th onclick="sortJobTable(1)" style="cursor:pointer">Work Order <span class="sort-icon">⇅</span></th>
+        <th onclick="sortJobTable(2)" style="cursor:pointer">Customer <span class="sort-icon">⇅</span></th>
+        <th onclick="sortJobTable(3)" style="cursor:pointer">Vehicle Type <span class="sort-icon">⇅</span></th>
+        <th onclick="sortJobTable(4)" style="cursor:pointer">Delivery <span class="sort-icon">⇅</span></th>
+        <th onclick="sortJobTable(5)" style="cursor:pointer">Est. Man Hrs <span class="sort-icon">⇅</span></th>
+        <th onclick="sortJobTable(6)" style="cursor:pointer">Supervisor <span class="sort-icon">⇅</span></th>
+        <th onclick="sortJobTable(7)" style="cursor:pointer">Status <span class="sort-icon">⇅</span></th>
+        <th>Actions</th>
+      </tr></thead>
+      <tbody id="jobs-tb"></tbody>
+    </table></div>
   </div>
 </div>
 
@@ -399,7 +458,7 @@ tr:hover td{background:var(--blue-lt)}
       <div class="fg"><label>Attendance</label>
         <select id="e-att"><option value="Present">✅ Present (8 hrs)</option><option value="Absent">❌ Absent (0 hrs)</option></select>
       </div>
-      <div class="fg"><label>Overtime Hours</label><input type="number" id="e-ot" min="0" max="8" step=".5" placeholder="0"></div>
+      <div class="fg"><label>Overtime Hours <span style="color:var(--txt3);font-weight:400">(max 4)</span></label><input type="number" id="e-ot" min="0" max="4" step=".5" placeholder="0"></div>
     </div>
     <div class="flex gap8">
       <button class="btn btn-p" onclick="addEntry()">+ Add Entry</button>
@@ -659,7 +718,7 @@ tr:hover td{background:var(--blue-lt)}
     </div>
   </div>
   <!-- Vehicle Types -->
-  <div class="card">
+  <div class="card mb20">
     <div class="card-title">Vehicle Types</div>
     <p class="f12 muted mb14">Manage the vehicle type dropdown used in Job Orders.</p>
     <div id="vt-list"></div>
@@ -667,6 +726,49 @@ tr:hover td{background:var(--blue-lt)}
       <input id="new-vt" placeholder="New vehicle type name" style="width:220px">
       <button class="btn btn-p btn-sm" onclick="addVehicleTypeFromSettings()">+ Add Type</button>
     </div>
+  </div>
+
+  <!-- Historical Man-Hour / Attendance Upload (Admin only) -->
+  <div class="card">
+    <div class="card-title">📂 Historical Data Entry (Pre-Dashboard Records)</div>
+    <div class="info-box mb14">Since production started before this dashboard was introduced, use this section to upload or manually enter previously recorded man-hours and attendance. This data will be merged with all daily entries and reflected in Man-Hour tracking.</div>
+    <div class="col2">
+      <div>
+        <p class="f12 fw6 mb14" style="color:var(--txt)">Option A — Upload Excel File</p>
+        <div class="ihint" style="text-align:left;margin-bottom:10px"><strong>Columns:</strong> Serial (Job SN) · Date · Supervisor · Employee Name · Stage · Attendance · Overtime Hrs</div>
+        <label class="flbl" for="f-hist-upload">📂 Upload Historical Excel</label>
+        <input type="file" id="f-hist-upload" accept=".xlsx,.xls,.csv" onchange="importHistoricalData(this)">
+        <div id="hist-upload-st" class="mt10 f11 muted"></div>
+        <button class="btn btn-b btn-sm mt10" onclick="dlHistTemplate()">⬇ Download Template</button>
+      </div>
+      <div>
+        <p class="f12 fw6 mb14" style="color:var(--txt)">Option B — Manual Entry</p>
+        <div class="fgrid" style="grid-template-columns:1fr 1fr">
+          <div class="fg"><label>Date</label><input type="date" id="hist-date"></div>
+          <div class="fg"><label>Supervisor</label><select id="hist-sup"><option value="">— Select —</option></select></div>
+          <div class="fg"><label>Job (Serial No.)</label><select id="hist-sn"><option value="">— Select —</option></select></div>
+          <div class="fg"><label>Stage</label>
+            <select id="hist-stage">
+              <option value="">— Select —</option>
+              <option>Preparation</option><option>Fabrication</option><option>Assembly</option>
+              <option>Welding</option><option>Painting</option><option>Finishing</option>
+            </select>
+          </div>
+          <div class="fg"><label>Employee</label><select id="hist-emp"><option value="">— Select —</option></select></div>
+          <div class="fg"><label>Attendance</label>
+            <select id="hist-att"><option value="Present">Present (8 hrs)</option><option value="Absent">Absent</option></select>
+          </div>
+          <div class="fg"><label>Overtime Hrs</label><input type="number" id="hist-ot" min="0" max="4" step=".5" placeholder="0"></div>
+        </div>
+        <button class="btn btn-p btn-sm" onclick="addHistEntry()">+ Add Historical Entry</button>
+        <div id="hist-manual-st" class="mt10 f11 muted"></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <p class="f11 fw6 mb14" style="color:var(--txt)">Existing Historical Entries (<span id="hist-count">0</span> records)</p>
+    <div class="tw" style="max-height:240px;overflow-y:auto"><table><thead><tr>
+      <th>Date</th><th>Serial</th><th>Supervisor</th><th>Employee</th><th>Stage</th><th>Att.</th><th>Base</th><th>OT</th><th>Total</th><th>Del</th>
+    </tr></thead><tbody id="hist-records-tb"></tbody></table></div>
   </div>
 </div>
 
@@ -1117,32 +1219,86 @@ function importJobs(inp){
       const data=new Uint8Array(ev.target.result);
       const wb=XLSX.read(data,{type:'array',cellDates:true});
       const ws=wb.Sheets[wb.SheetNames[0]];
-      const aoa=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:false});
+      // Use raw:true so we get numbers as numbers and dates as Date objects
+      const aoa=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:true});
       if(!aoa||aoa.length<2){toast('No data rows found in file','err');return;}
-      let added=0,skipped=0;
+
+      let added=0,skipped=0,dupSN=0;
+
       for(let i=1;i<aoa.length;i++){
         const row=aoa[i];
-        const wo=String(row[1]||'').trim();
-        if(!wo){skipped++;continue;}
-        if(S.jobs.find(j=>j.wo===wo)){skipped++;continue;}
-        // Ensure vehicle type is in our list
-        const vtype=String(row[3]||'Truck Trailer').trim();
-        if(vtype&&!S.cfg.vehicleTypes.includes(vtype)) S.cfg.vehicleTypes.push(vtype);
+        // Skip completely empty rows
+        const anyVal=row.some(c=>c!==null&&c!==undefined&&c!=='');
+        if(!anyVal){skipped++;continue;}
+
+        // Serial Number — col 0 — required and must be unique
+        const sn=String(row[0]||'').trim();
+        if(!sn){skipped++;continue;}
+
+        // Check for duplicate serial number
+        if(S.jobs.find(j=>j.sn===sn)){dupSN++;skipped++;continue;}
+
+        // Work Order — col 1 — may be 'N/A', numeric, or string
+        let wo=String(row[1]||'').trim();
+        if(!wo||wo.toLowerCase()==='n/a'||wo===''){
+          wo='N/A'; // accept N/A, store as-is
+        } else {
+          // Could be a number like 602000200 — keep as string
+          wo=String(row[1]).trim();
+        }
+
+        // Customer — col 2
+        const customer=String(row[2]||'').trim()||'N/A';
+
+        // Vehicle Type — col 3
+        const vtype=String(row[3]||'').trim()||'Other';
+        // Auto-add new vehicle types to the dropdown list
+        if(!S.cfg.vehicleTypes.includes(vtype)){
+          S.cfg.vehicleTypes.push(vtype);
+        }
+
+        // Delivery Date — col 4 — may be a JS Date object, string 'N/A', or serial number
+        let delivery='N/A';
+        const rawDel=row[4];
+        if(rawDel instanceof Date){
+          // SheetJS parsed it as a real Date
+          const y=rawDel.getFullYear();
+          const m=String(rawDel.getMonth()+1).padStart(2,'0');
+          const d=String(rawDel.getDate()).padStart(2,'0');
+          delivery=`${y}-${m}-${d}`;
+        } else if(rawDel&&String(rawDel).trim().toLowerCase()!=='n/a'&&String(rawDel).trim()!==''){
+          delivery=fmtDate(rawDel);
+        }
+
+        // Estimated Man Hours — col 5 — may be 'N/A' or a number
+        let estMH=0;
+        const rawMH=row[5];
+        if(rawMH!==null&&rawMH!==undefined&&rawMH!==''&&String(rawMH).toLowerCase()!=='n/a'){
+          estMH=parseFloat(rawMH)||0;
+        }
+
+        // Supervisor — col 6
+        const supervisor=String(row[6]||'').trim();
+        const supClean=(supervisor.toLowerCase()==='empty'||supervisor.toLowerCase()==='n/a'||!supervisor)?'':supervisor;
+
         S.jobs.push({
-          sn:String(row[0]||i).trim(), wo,
-          customer:String(row[2]||'').trim(),
-          type:vtype,
-          delivery:fmtDate(row[4]),
-          estMH:parseFloat(row[5])||0,
-          supervisor:String(row[6]||'').trim(),
+          sn, wo, customer, type:vtype,
+          delivery, estMH,
+          supervisor:supClean,
           status:'In Progress'
         });
         added++;
       }
+
       save();
       const stEl=document.getElementById('st-jobs');
-      if(stEl) stEl.textContent='✅ Imported '+added+' job orders ('+skipped+' skipped)';
-      toast('Imported '+added+' job orders');
+      let msg=`✅ Imported ${added} job orders`;
+      if(skipped>0) msg+=` (${skipped} skipped`;
+      if(dupSN>0) msg+=`, ${dupSN} duplicate serial numbers`;
+      if(skipped>0) msg+=')';
+      if(stEl) stEl.textContent=msg;
+      if(stEl) stEl.style.color=added>0?'var(--green)':'var(--red)';
+      toast(added>0?`✅ Imported ${added} job orders`:`⚠ No rows imported — check file format`);
       refreshAll();
     }catch(err){
       toast('Import error: '+err.message,'err');
@@ -1151,7 +1307,6 @@ function importJobs(inp){
   };
   reader.onerror=function(){toast('Failed to read file','err');};
   reader.readAsArrayBuffer(file);
-  // Reset input so same file can be re-selected
   inp.value='';
 }
 
@@ -1305,18 +1460,19 @@ function clearAll(){
 // ═══════════════════════════════════════════
 //  MAN-HOUR UTILS
 // ═══════════════════════════════════════════
-function actualHrs(wo){ return S.entries.filter(e=>e.wo===wo).reduce((a,e)=>a+eTotalHrs(e),0); }
+// Use serial number (sn) as the unique key for job linkage since WO can be N/A or duplicated
+function actualHrs(sn){ return S.entries.filter(e=>e.sn===sn).reduce((a,e)=>a+eTotalHrs(e),0); }
 function eTotalHrs(e){ return e.att==='Present'?(e.baseHrs||8)+(e.ot||0):0; }
 
 function checkMHAlerts(){
   const existing=new Set(S.mhAlerts.map(a=>a.key));
   S.jobs.forEach(j=>{
     if(!j.estMH) return;
-    const act=actualHrs(j.wo); const pct=act/j.estMH*100;
+    const act=actualHrs(j.sn); const pct=act/j.estMH*100;
     [80,90,100].forEach(th=>{
-      const key=`${j.wo}_${th}`;
+      const key=`${j.sn}_${th}`;
       if(pct>=th&&!existing.has(key)){
-        S.mhAlerts.push({key,wo:j.wo,th,pct:Math.round(pct),act,plan:j.estMH,date:today(),customer:j.customer});
+        S.mhAlerts.push({key,sn:j.sn,wo:j.wo,th,pct:Math.round(pct),act,plan:j.estMH,date:today(),customer:j.customer});
         existing.add(key);
       }
     });
@@ -1333,41 +1489,49 @@ function checkMHAlerts(){
 // ═══════════════════════════════════════════
 function updateDropdowns(){
   const supNames=S.supervisors.map(s=>s.name);
-  // Work order selects
-  ['e-wo','i-wo','ee-wo','h-wo'].forEach(id=>{
+
+  // Job selects — SN + Vehicle Type + WO — no designation clutter
+  // Format: #001 | Flatbed Semi-Trailer 38 TON (WO: 602000200)
+  const jobLabel=j=>{
+    const wo=j.wo&&j.wo!=='N/A'?`WO: ${j.wo}`:'No WO';
+    return `#${j.sn} | ${j.type} (${wo})`;
+  };
+  ['e-wo','i-wo','ee-wo','h-wo','hist-sn'].forEach(id=>{
     const el=document.getElementById(id); if(!el)return;
     const cur=el.value;
-    el.innerHTML=id==='h-wo'?'<option value="">All</option>':'<option value="">— Select —</option>';
-    S.jobs.forEach(j=>el.innerHTML+=`<option value="${j.wo}"${j.wo===cur?' selected':''}>${j.wo} — ${j.customer}</option>`);
+    el.innerHTML=(id==='h-wo'||id==='hist-sn')?'<option value="">— Select —</option>':'<option value="">— Select job —</option>';
+    S.jobs.forEach(j=>{
+      el.innerHTML+=`<option value="${j.sn}"${j.sn===cur?' selected':''}>${jobLabel(j)}</option>`;
+    });
   });
-  // Employee selects
-  ['e-emp','ee-emp','att-emp'].forEach(id=>{
+
+  // Employee selects — ID + Name only, NO designation
+  const empLabel=m=>`${m.id} — ${m.name}`;
+  ['e-emp','ee-emp','att-emp','hist-emp'].forEach(id=>{
     const el=document.getElementById(id); if(!el)return;
     const cur=el.value;
-    el.innerHTML=id==='att-emp'?'<option value="">All</option>':'<option value="">— Select —</option>';
-    S.manpower.forEach(m=>el.innerHTML+=`<option value="${m.name}"${m.name===cur?' selected':''}>${m.name} (${m.desig})</option>`);
+    el.innerHTML=id==='att-emp'?'<option value="">All Employees</option>':'<option value="">— Select employee —</option>';
+    S.manpower.forEach(m=>el.innerHTML+=`<option value="${m.name}"${m.name===cur?' selected':''}>${empLabel(m)}</option>`);
   });
+
   // Supervisor selects
-  ['e-sup','ee-sup','j-sup'].forEach(id=>{
+  ['e-sup','ee-sup','j-sup','hist-sup'].forEach(id=>{
     const el=document.getElementById(id); if(!el)return;
     const cur=el.value;
     el.innerHTML='<option value="">— Select —</option>';
     supNames.forEach(n=>el.innerHTML+=`<option value="${n}"${n===cur?' selected':''}>${n}</option>`);
   });
-  // emp-sup
   const empSupEl=document.getElementById('emp-sup'); if(empSupEl){
     const cur=empSupEl.value; empSupEl.innerHTML='<option value="">— Select —</option>';
     supNames.forEach(n=>empSupEl.innerHTML+=`<option value="${n}"${n===cur?' selected':''}>${n}</option>`);
   }
-  // Raised by
   const ib=document.getElementById('i-by'); if(ib){
     const cur=ib.value; ib.innerHTML='<option value="Production Engineer">Production Engineer</option>';
     supNames.forEach(n=>ib.innerHTML+=`<option value="${n}"${n===cur?' selected':''}>${n}</option>`);
   }
-  // Vehicle type dropdown in job modal
   renderVehicleTypes();
-  // Dept
   renderDepts();
+  renderHistRecords();
 }
 
 // ═══════════════════════════════════════════
@@ -1393,6 +1557,11 @@ function refreshAll(){
 // ═══════════════════════════════════════════
 //  OVERVIEW
 // ═══════════════════════════════════════════
+// ─── Sort/Filter state ───
+let ovSortCol=-1, ovSortDir=1;
+let jobSortCol=-1, jobSortDir=1;
+let ovFilteredJobs=null, jobFilteredJobs=null;
+
 function renderOverview(){
   const t=today();
   const totalWOs=S.jobs.length;
@@ -1403,86 +1572,184 @@ function renderOverview(){
   const compJobs=S.jobs.filter(j=>j.status==='Completed').length;
 
   document.getElementById('ov-kpis').innerHTML=`
-    <div class="kcard kb"><div class="klbl">Work Orders</div><div class="kval">${totalWOs}</div><div class="ksub">Total active</div></div>
-    <div class="kcard kg"><div class="klbl">Completed</div><div class="kval">${compJobs}</div><div class="ksub">Work orders done</div></div>
+    <div class="kcard kb"><div class="klbl">Work Orders</div><div class="kval">${totalWOs}</div><div class="ksub">Total</div></div>
+    <div class="kcard kg"><div class="klbl">Completed</div><div class="kval">${compJobs}</div><div class="ksub">Done</div></div>
     <div class="kcard kr"><div class="klbl">Open Issues</div><div class="kval">${openI}</div><div class="ksub">Needs action</div></div>
-    <div class="kcard kc"><div class="klbl">Today Hours</div><div class="kval">${todayHrs}</div><div class="ksub">Total logged today</div></div>
+    <div class="kcard kc"><div class="klbl">Today Hours</div><div class="kval">${todayHrs}</div><div class="ksub">Logged today</div></div>
     <div class="kcard ko"><div class="klbl">Today Present</div><div class="kval">${todayAtt}</div><div class="ksub">Employees</div></div>
-    <div class="kcard kp"><div class="klbl">MH Alerts</div><div class="kval">${mhW}</div><div class="ksub">Threshold reached</div></div>
+    <div class="kcard kp"><div class="klbl">MH Alerts</div><div class="kval">${mhW}</div><div class="ksub">Thresholds hit</div></div>
   `;
 
-  // ── ALL WO: Estimated vs Actual MH bar chart ──
-  const labels=S.jobs.map(j=>j.wo);
+  // ── Horizontally scrollable bar chart ──
+  const BAR_W=52; // px per bar pair
+  const chartW=Math.max(S.jobs.length*BAR_W, 600);
+  const inner=document.getElementById('mh-chart-inner');
+  if(inner){ inner.style.width=chartW+'px'; inner.style.height='260px'; }
+  const cv=document.getElementById('ch-mh-ov');
+  if(cv){ cv.style.width=chartW+'px'; cv.style.height='260px'; }
+  const labels=S.jobs.map(j=>`#${j.sn}`);
   const estData=S.jobs.map(j=>j.estMH||0);
-  const actData=S.jobs.map(j=>actualHrs(j.wo));
-  mkChart('ch-mh-ov',{
-    type:'bar',
-    data:{
-      labels,
-      datasets:[
-        {label:'Estimated Man Hours',data:estData,backgroundColor:'rgba(59,130,246,.55)',borderColor:'#3b82f6',borderWidth:2,borderRadius:5},
-        {label:'Actual Man Hours',data:actData,backgroundColor:'rgba(245,158,11,.75)',borderColor:'#d97706',borderWidth:2,borderRadius:5}
-      ]
-    },
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{labels:{color:'#475569',font:{size:11}}},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw}h`}}},
-      scales:{
-        x:{ticks:{color:'#94a3b8',font:{size:11}},grid:{display:false}},
-        y:{ticks:{color:'#94a3b8',callback:v=>v+'h'},grid:{color:'rgba(203,213,225,.5)'},title:{display:true,text:'Hours',color:'#94a3b8',font:{size:11}}}
+  const actData=S.jobs.map(j=>actualHrs(j.sn));
+  if(charts['ch-mh-ov']){charts['ch-mh-ov'].destroy();delete charts['ch-mh-ov'];}
+  if(cv){
+    charts['ch-mh-ov']=new Chart(cv.getContext('2d'),{
+      type:'bar',
+      data:{labels,datasets:[
+        {label:'Estimated Man Hours',data:estData,backgroundColor:'rgba(59,130,246,.55)',borderColor:'#3b82f6',borderWidth:1.5,borderRadius:4,barThickness:18},
+        {label:'Actual Man Hours',data:actData,backgroundColor:'rgba(245,158,11,.75)',borderColor:'#d97706',borderWidth:1.5,borderRadius:4,barThickness:18}
+      ]},
+      options:{
+        responsive:false,maintainAspectRatio:false,
+        plugins:{legend:{labels:{color:'#475569',font:{size:11}}},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw}h`}}},
+        scales:{
+          x:{ticks:{color:'#94a3b8',font:{size:10},maxRotation:45},grid:{display:false}},
+          y:{ticks:{color:'#94a3b8',callback:v=>v+'h'},grid:{color:'rgba(203,213,225,.5)'},title:{display:true,text:'Hours',color:'#94a3b8',font:{size:10}}}
+        }
       }
-    }
-  });
+    });
+  }
+  // Drag-to-scroll on chart
+  initChartScroll();
 
   // Vehicle type donut
   const tc={};S.jobs.forEach(j=>{tc[j.type]=(tc[j.type]||0)+1});
-  mkChart('ch-type',{type:'doughnut',data:{labels:Object.keys(tc),datasets:[{data:Object.values(tc),backgroundColor:['#3b82f6','#10b981','#f59e0b','#8b5cf6','#ef4444'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#64748b',font:{size:10}}}}}});
+  mkChart('ch-type',{type:'doughnut',data:{labels:Object.keys(tc),datasets:[{data:Object.values(tc),backgroundColor:['#3b82f6','#10b981','#f59e0b','#8b5cf6','#ef4444','#22d3ee','#f43f5e','#84cc16'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#64748b',font:{size:10}}}}}});
 
-  // Stage bar today
-  const sc={};STAGES.forEach(s=>sc[s]=0);
-  S.entries.filter(e=>e.date===t).forEach(e=>{if(sc[e.stage]!==undefined)sc[e.stage]++;});
-  mkChart('ch-stage',{type:'bar',data:{labels:STAGES,datasets:[{label:'Entries',data:STAGES.map(s=>sc[s]),backgroundColor:'#3b82f6',borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#94a3b8',font:{size:10}},grid:{display:false}},y:{ticks:{color:'#94a3b8'},grid:{color:'rgba(203,213,225,.5)'}}}}});
+  // Populate table with filter state
+  ovFilteredJobs=[...S.jobs];
+  applyOvFilters();
+}
 
-  // Job orders table
-  const tbody=document.getElementById('ov-jobs'); tbody.innerHTML='';
+function initChartScroll(){
+  const el=document.getElementById('mh-chart-scroll'); if(!el)return;
+  let isDown=false, startX=0, scrollLeft=0;
+  el.onmousedown=e=>{isDown=true;el.style.cursor='grabbing';startX=e.pageX-el.offsetLeft;scrollLeft=el.scrollLeft;};
+  el.onmouseleave=()=>{isDown=false;el.style.cursor='grab';};
+  el.onmouseup=()=>{isDown=false;el.style.cursor='grab';};
+  el.onmousemove=e=>{if(!isDown)return;e.preventDefault();const x=e.pageX-el.offsetLeft;el.scrollLeft=scrollLeft-(x-startX);};
+}
+
+function applyOvFilters(){
+  const fSN=(document.getElementById('ov-f-sn')||{}).value||'';
+  const fWO=(document.getElementById('ov-f-wo')||{}).value||'';
+  const fCust=(document.getElementById('ov-f-cust')||{}).value||'';
+  const fType=(document.getElementById('ov-f-type')||{}).value||'';
+  const fSup=(document.getElementById('ov-f-sup')||{}).value||'';
+  const fStat=(document.getElementById('ov-f-status')||{}).value||'';
+  const q=s=>s.toLowerCase();
+  ovFilteredJobs=S.jobs.filter(j=>
+    (!fSN||String(j.sn).toLowerCase().includes(q(fSN)))&&
+    (!fWO||String(j.wo).toLowerCase().includes(q(fWO)))&&
+    (!fCust||String(j.customer).toLowerCase().includes(q(fCust)))&&
+    (!fType||String(j.type).toLowerCase().includes(q(fType)))&&
+    (!fSup||String(j.supervisor).toLowerCase().includes(q(fSup)))&&
+    (!fStat||j.status===fStat)
+  );
+  if(ovSortCol>=0) ovFilteredJobs=sortJobsArr(ovFilteredJobs,ovSortCol,ovSortDir);
+  renderOvTable();
+}
+function clearOvFilters(){
+  ['ov-f-sn','ov-f-wo','ov-f-cust','ov-f-type','ov-f-sup','ov-f-status'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ovSortCol=-1;
+  document.querySelectorAll('#ov-table th').forEach(th=>{th.classList.remove('sort-asc','sort-desc');});
+  applyOvFilters();
+}
+function sortOvTable(col){
+  if(ovSortCol===col)ovSortDir*=-1; else{ovSortCol=col;ovSortDir=1;}
+  document.querySelectorAll('#ov-table th').forEach((th,i)=>{th.classList.remove('sort-asc','sort-desc');if(i===col)th.classList.add(ovSortDir===1?'sort-asc':'sort-desc');});
+  applyOvFilters();
+}
+function renderOvTable(){
+  const tbody=document.getElementById('ov-jobs'); if(!tbody)return;
+  tbody.innerHTML='';
   const now=new Date();
-  S.jobs.forEach(j=>{
-    const act=actualHrs(j.wo);
+  ovFilteredJobs.forEach(j=>{
+    const act=actualHrs(j.sn);
     const pct=j.estMH>0?Math.round(act/j.estMH*100):0;
     const ddays=Math.ceil((new Date(j.delivery)-now)/864e5);
-    const late=ddays<7&&j.status!=='Completed';
+    const late=ddays<7&&j.status!=='Completed'&&j.delivery&&j.delivery!=='N/A';
     const mhBar=pct>=100?'pb-r':pct>=80?'pb-y':'pb-b';
     const stBadge=j.status==='Completed'?'bx-done':late?'bx-del':'bx-prog';
     tbody.innerHTML+=`<tr>
       <td class="muted">${j.sn}</td>
       <td><span class="blue fw6">${j.wo}</span></td><td>${j.customer}</td><td>${j.type}</td>
-      <td>${j.delivery}${late?'&nbsp;<span class="wt">⚠</span>':''}</td>
+      <td>${j.delivery||'—'}${late?'&nbsp;<span class="wt">⚠</span>':''}</td>
       <td>${j.supervisor||'—'}</td>
       <td class="fw6">${j.estMH||'—'}</td>
       <td style="color:${pct>=90?'var(--red)':'var(--txt2)'};" class="fw6">${act}h</td>
-      <td style="min-width:110px">
-        ${j.estMH?`<div style="font-size:9px;color:var(--txt3);margin-bottom:3px">${pct}% used</div><div class="pb" style="height:7px"><div class="pb-f ${mhBar}" style="width:${Math.min(pct,100)}%"></div></div>`:'—'}
-      </td>
+      <td style="min-width:110px">${j.estMH?`<div style="font-size:9px;color:var(--txt3);margin-bottom:3px">${pct}% used</div><div class="pb" style="height:7px"><div class="pb-f ${mhBar}" style="width:${Math.min(pct,100)}%"></div></div>`:'—'}</td>
       <td><span class="bx ${stBadge}">${j.status}</span></td>
     </tr>`;
   });
-  if(!S.jobs.length) tbody.innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--txt3);padding:24px">No job orders. Load sample data or import Excel.</td></tr>';
+  const cnt=document.getElementById('ov-filter-count');
+  if(cnt) cnt.textContent=ovFilteredJobs.length<S.jobs.length?`Showing ${ovFilteredJobs.length} of ${S.jobs.length}`:'';
+  if(!ovFilteredJobs.length) tbody.innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--txt3);padding:24px">No matching job orders.</td></tr>';
 }
 
 // ═══════════════════════════════════════════
 //  JOB ORDERS
 // ═══════════════════════════════════════════
+// ─── Job table sort/filter helpers ───
+function sortJobsArr(arr,col,dir){
+  const getVal=(j,c)=>{
+    const vals=[j.sn,j.wo,j.customer,j.type,j.delivery||'',j.estMH||0,j.supervisor||'',j.status];
+    return String(vals[c]||'').toLowerCase();
+  };
+  return [...arr].sort((a,b)=>{
+    const av=getVal(a,col), bv=getVal(b,col);
+    if(!isNaN(parseFloat(av))&&!isNaN(parseFloat(bv))) return (parseFloat(av)-parseFloat(bv))*dir;
+    return av.localeCompare(bv)*dir;
+  });
+}
+
+function applyJobFilters(){
+  const fSN=(document.getElementById('jf-sn')||{}).value||'';
+  const fWO=(document.getElementById('jf-wo')||{}).value||'';
+  const fCust=(document.getElementById('jf-cust')||{}).value||'';
+  const fType=(document.getElementById('jf-type')||{}).value||'';
+  const fSup=(document.getElementById('jf-sup')||{}).value||'';
+  const fStat=(document.getElementById('jf-status')||{}).value||'';
+  const q=s=>s.toLowerCase();
+  jobFilteredJobs=S.jobs.filter(j=>
+    (!fSN||String(j.sn).toLowerCase().includes(q(fSN)))&&
+    (!fWO||String(j.wo).toLowerCase().includes(q(fWO)))&&
+    (!fCust||String(j.customer).toLowerCase().includes(q(fCust)))&&
+    (!fType||String(j.type).toLowerCase().includes(q(fType)))&&
+    (!fSup||String(j.supervisor).toLowerCase().includes(q(fSup)))&&
+    (!fStat||j.status===fStat)
+  );
+  if(jobSortCol>=0) jobFilteredJobs=sortJobsArr(jobFilteredJobs,jobSortCol,jobSortDir);
+  renderJobsTable();
+}
+function clearJobFilters(){
+  ['jf-sn','jf-wo','jf-cust','jf-type','jf-sup','jf-status'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  jobSortCol=-1;
+  document.querySelectorAll('#pane-jobs th').forEach(th=>th.classList.remove('sort-asc','sort-desc'));
+  applyJobFilters();
+}
+function sortJobTable(col){
+  if(jobSortCol===col)jobSortDir*=-1; else{jobSortCol=col;jobSortDir=1;}
+  document.querySelectorAll('#pane-jobs th').forEach((th,i)=>{th.classList.remove('sort-asc','sort-desc');if(i===col)th.classList.add(jobSortDir===1?'sort-asc':'sort-desc');});
+  applyJobFilters();
+}
+
 function renderJobs(){
-  const tbody=document.getElementById('jobs-tb'); tbody.innerHTML='';
-  S.jobs.forEach((j,idx)=>{
-    const act=actualHrs(j.wo);
+  jobFilteredJobs=jobFilteredJobs||[...S.jobs];
+  applyJobFilters();
+}
+function renderJobsTable(){
+  const tbody=document.getElementById('jobs-tb'); if(!tbody)return;
+  tbody.innerHTML='';
+  (jobFilteredJobs||S.jobs).forEach((j)=>{
+    const idx=S.jobs.indexOf(j);
+    const act=actualHrs(j.sn);
     const pct=j.estMH>0?Math.round(act/j.estMH*100):0;
     const stBadge=j.status==='Completed'?'bx-done':j.status==='On Hold'?'bx-m':'bx-prog';
     tbody.innerHTML+=`<tr>
       <td class="muted">${j.sn}</td>
       <td><span class="blue fw6">${j.wo}</span></td><td>${j.customer}</td><td>${j.type}</td>
-      <td>${j.delivery}</td>
-      <td class="fw6">${j.estMH||'—'} <span class="f10 muted">(${pct}% used)</span></td>
+      <td>${j.delivery||'—'}</td>
+      <td class="fw6">${j.estMH||'—'} <span class="f10 muted">${pct?'('+pct+'% used)':''}</span></td>
       <td>${j.supervisor||'—'}</td>
       <td><span class="bx ${stBadge}">${j.status}</span></td>
       <td style="white-space:nowrap">
@@ -1493,7 +1760,10 @@ function renderJobs(){
       </td>
     </tr>`;
   });
-  if(!S.jobs.length) tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--txt3);padding:24px">No job orders.</td></tr>';
+  const cnt=document.getElementById('jf-count');
+  if(cnt&&jobFilteredJobs&&jobFilteredJobs.length<S.jobs.length) cnt.textContent=`Showing ${jobFilteredJobs.length} of ${S.jobs.length}`;
+  else if(cnt) cnt.textContent='';
+  if(!(jobFilteredJobs||S.jobs).length) tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--txt3);padding:24px">No job orders.</td></tr>';
 }
 
 function openJobMo(idx){
@@ -1513,12 +1783,13 @@ function openJobMo(idx){
   openMo('mo-job');
 }
 function saveJob(){
-  const wo=document.getElementById('j-wo').value.trim();
-  const cust=document.getElementById('j-cust').value.trim();
-  if(!wo||!cust){toast('Work Order & Customer required','err');return;}
+  const sn=document.getElementById('j-sn').value.trim();
+  const wo=document.getElementById('j-wo').value.trim()||'N/A';
+  const cust=document.getElementById('j-cust').value.trim()||'N/A';
+  if(!sn){toast('Serial Number is required','err');return;}
   const idx=document.getElementById('j-idx').value;
-  const obj={sn:document.getElementById('j-sn').value.trim()||'',wo,customer:cust,type:document.getElementById('j-type').value,delivery:document.getElementById('j-del').value,estMH:parseFloat(document.getElementById('j-mh').value)||0,supervisor:document.getElementById('j-sup').value,status:document.getElementById('j-stat').value};
-  if(idx===''){ if(S.jobs.find(j=>j.wo===wo)){toast('WO exists','err');return;} S.jobs.push(obj); }
+  const obj={sn,wo,customer:cust,type:document.getElementById('j-type').value,delivery:document.getElementById('j-del').value,estMH:parseFloat(document.getElementById('j-mh').value)||0,supervisor:document.getElementById('j-sup').value,status:document.getElementById('j-stat').value};
+  if(idx===''){ if(S.jobs.find(j=>j.sn===sn)){toast('Serial Number already exists','err');return;} S.jobs.push(obj); }
   else S.jobs[parseInt(idx)]=obj;
   save();closeMo('mo-job');toast(idx===''?'Added':'Updated');refreshAll();
 }
@@ -1535,51 +1806,62 @@ function renderSupPanels(){
   const t=today();
   container.innerHTML=S.supervisors.map((s,si)=>{
     const color=SUP_COLORS[si%SUP_COLORS.length];
+    const myEmp=S.manpower.filter(m=>m.sup===s.name);
+    const totalMp=myEmp.length;
     const todayEnt=S.entries.filter(e=>e.date===t&&e.sup===s.name);
-    const present=new Set(todayEnt.filter(e=>e.att==='Present').map(e=>e.emp)).size;
-    const totalH=todayEnt.reduce((a,e)=>a+eTotalHrs(e),0);
-    const myJobs=S.jobs.filter(j=>j.supervisor===s.name&&j.status!=='Completed').length;
-    const compJ=S.jobs.filter(j=>j.supervisor===s.name&&j.status==='Completed').length;
-    const sc={};STAGES.forEach(st=>sc[st]=0);
-    todayEnt.forEach(e=>{if(sc[e.stage]!==undefined)sc[e.stage]++;});
-    const mx=Math.max(...Object.values(sc),1);
-    const stageHtml=STAGES.map(st=>{
-      const pct=Math.round(sc[st]/mx*100);
-      const cls=pct>60?'pb-g':pct>30?'pb-y':'pb-b';
-      return `<div class="stage-row"><span class="sl">${st}</span><div class="pb" style="flex:1;height:5px"><div class="pb-f ${cls}" style="width:${pct}%"></div></div><span class="sp">${sc[st]}</span></div>`;
-    }).join('');
-    const avHtml=s.photo?`<img src="${s.photo}" style="width:48px;height:48px;object-fit:cover">`:`<span>${s.name[0]||'S'}</span>`;
+    const todayPresent=new Set(todayEnt.filter(e=>e.att==="Present").map(e=>e.emp)).size;
+    const todayHrs=todayEnt.reduce((a,e)=>a+eTotalHrs(e),0);
+    const allMyJobs=S.jobs.filter(j=>j.supervisor===s.name);
+    const activeJobs=allMyJobs.filter(j=>j.status==="In Progress");
+    const compJobs=allMyJobs.filter(j=>j.status==="Completed");
+    const onHoldJobs=allMyJobs.filter(j=>j.status==="On Hold");
+    const avHtml=s.photo?`<img src="${s.photo}" style="width:48px;height:48px;object-fit:cover;border-radius:50%">`:`<span style="font-size:20px;font-weight:700;color:#fff">${s.name[0]||"S"}</span>`;
+    const jobRows=allMyJobs.slice(0,8).map(j=>{
+      const act=actualHrs(j.sn);
+      const pct=j.estMH>0?Math.min(Math.round(act/j.estMH*100),100):0;
+      const bar=j.status==="Completed"?"pb-g":pct>=80?"pb-r":pct>=50?"pb-y":"pb-b";
+      const badge=j.status==="Completed"?"bx-done":j.status==="On Hold"?"bx-m":"bx-prog";
+      return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+        <span style="font-size:10px;color:var(--txt3);width:24px;flex-shrink:0">#${j.sn}</span>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:10px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${j.type}</div>
+          <div style="font-size:9px;color:var(--txt3)">${j.wo&&j.wo!=="N/A"?"WO: "+j.wo:j.customer||"—"}</div>
+        </div>
+        <span class="bx ${badge}" style="flex-shrink:0">${j.status}</span>
+        ${j.estMH?`<div class="pb" style="width:44px;height:5px;flex-shrink:0"><div class="pb-f ${bar}" style="width:${pct}%"></div></div>`:""}
+      </div>`;
+    }).join("");
+    const extraJobs=allMyJobs.length>8?`<div style="font-size:10px;color:var(--txt3);padding:6px 0;text-align:center">+ ${allMyJobs.length-8} more</div>`:"";
     return `<div class="sup-panel">
-      <div class="sup-hdr" style="background:linear-gradient(135deg,${color}15,${color}08)">
-        <div class="sup-av" style="background:${color}">${avHtml}</div>
-        <div>
+      <div class="sup-hdr" style="background:linear-gradient(135deg,${color}18,${color}06)">
+        <div class="sup-av" style="background:${color};border-radius:50%;overflow:hidden">${avHtml}</div>
+        <div style="flex:1">
           <div class="sup-name">${s.name}</div>
           <div class="sup-role">${s.role}</div>
-          ${curRole==='admin'?`<button class="btn btn-s btn-xs" style="margin-top:5px" onclick="openSupMo(${si})">✏️ Edit</button>`:''}
+          ${curRole==="admin"?`<button class="btn btn-s btn-xs" style="margin-top:5px" onclick="openSupMo(${si})">✏️ Edit</button>`:""}
         </div>
       </div>
       <div class="sup-body">
-        <div class="sup-stats">
-          <div class="ss"><div class="ss-v" style="color:${color}">${present}</div><div class="ss-l">Today Present</div></div>
-          <div class="ss"><div class="ss-v" style="color:${color}">${totalH}</div><div class="ss-l">Hours Logged</div></div>
-          <div class="ss"><div class="ss-v" style="color:${color}">${myJobs}</div><div class="ss-l">Active Jobs</div></div>
-          <div class="ss"><div class="ss-v" style="color:${color}">${compJ}</div><div class="ss-l">Completed</div></div>
+        <div class="sup-stats" style="grid-template-columns:repeat(4,1fr)">
+          <div class="ss"><div class="ss-v" style="color:${color}">${totalMp}</div><div class="ss-l">Total<br>Manpower</div></div>
+          <div class="ss"><div class="ss-v" style="color:${color}">${todayPresent}</div><div class="ss-l">Today<br>Present</div></div>
+          <div class="ss"><div class="ss-v" style="color:${color}">${activeJobs.length}</div><div class="ss-l">Active<br>Jobs</div></div>
+          <div class="ss"><div class="ss-v" style="color:var(--green)">${compJobs.length}</div><div class="ss-l">Completed<br>Jobs</div></div>
         </div>
-        ${stageHtml}
-        <div class="ch-wrap"><canvas id="chs${si}"></canvas></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+          <span style="font-size:10px;color:var(--txt3)">Status:</span>
+          ${activeJobs.length?`<span class="bx bx-prog">${activeJobs.length} Active</span>`:""}
+          ${compJobs.length?`<span class="bx bx-done">${compJobs.length} Done</span>`:""}
+          ${onHoldJobs.length?`<span class="bx bx-m">${onHoldJobs.length} On Hold</span>`:""}
+          ${!allMyJobs.length?`<span class="f10 muted">No jobs assigned</span>`:""}
+        </div>
+        ${allMyJobs.length?`<div style="max-height:200px;overflow-y:auto">${jobRows}${extraJobs}</div>`:""}
+        ${todayHrs>0?`<div style="margin-top:8px;padding:6px 10px;background:var(--bg3);border-radius:var(--rr);font-size:11px;color:var(--txt2)">🕐 Today: <strong>${todayHrs}h</strong> — ${todayEnt.length} entries</div>`:""}
       </div>
     </div>`;
-  }).join('');
-  // Draw mini charts after DOM update
-  setTimeout(()=>{
-    S.supervisors.forEach((s,si)=>{
-      const desigC={};
-      S.manpower.filter(m=>m.sup===s.name).forEach(m=>{desigC[m.desig]=(desigC[m.desig]||0)+1;});
-      if(!Object.keys(desigC).length)return;
-      mkChart(`chs${si}`,{type:'doughnut',data:{labels:Object.keys(desigC),datasets:[{data:Object.values(desigC),backgroundColor:['#3b82f6','#10b981','#f59e0b','#8b5cf6','#ef4444','#22d3ee'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#64748b',font:{size:9},boxWidth:9}}}}});
-    });
-  },50);
+  }).join("");
 }
+
 
 function openSupMo(si){
   const edit=si>=0;
@@ -1631,12 +1913,12 @@ function renderEntries(){
   const tbody=document.getElementById('entry-tb'); tbody.innerHTML='';
   sorted.forEach((e,dispIdx)=>{
     const ri=S.entries.indexOf(e);
-    // Find job serial for this work order
-    const job=S.jobs.find(j=>j.wo===e.wo);
-    const serial=job?job.sn:'—';
+    // sn is stored directly in the entry; for old entries fall back to job lookup
+    const sn=e.sn||(S.jobs.find(j=>j.wo===e.wo)||{}).sn||'—';
+    const woDisplay=e.wo||sn;
     tbody.innerHTML+=`<tr>
-      <td class="muted">${serial}</td>
-      <td>${e.date}</td><td>${e.sup}</td><td>${e.emp}</td><td><span class="blue">${e.wo}</span></td>
+      <td class="muted">${sn}</td>
+      <td>${e.date}</td><td>${e.sup}</td><td>${e.emp}</td><td><span class="blue">${woDisplay}</span></td>
       <td>${e.stage}</td>
       <td><span class="bx ${e.att==='Present'?'bx-pr':'bx-ab'}">${e.att}</span></td>
       <td class="tacc">${e.baseHrs||0}</td><td class="tacc">${e.ot||0}</td><td class="tacc fw6">${eTotalHrs(e)}</td>
@@ -1649,18 +1931,48 @@ function renderEntries(){
 }
 
 function addEntry(){
+  const date=document.getElementById('e-date').value;
+  const sup=document.getElementById('e-sup').value;
+  const sn=document.getElementById('e-wo').value;
+  const stage=document.getElementById('e-stage').value;
+  const emp=document.getElementById('e-emp').value;
   const att=document.getElementById('e-att').value;
   const ot=parseFloat(document.getElementById('e-ot').value)||0;
+
+  // ── Required field check ──
+  if(!date||!sup||!sn||!stage||!emp) return toast('⚠ Please fill all required fields','err');
+
+  // ── Duplicate entry check — same employee + same date ──
+  const existing=S.entries.find(e=>e.emp===emp&&e.date===date&&(e.sn===sn||e.wo===sn));
+  if(existing){
+    return toast(`⚠ ${emp} already has an entry on ${date} for this job. Delete or edit the existing entry.`,'err');
+  }
+
+  // ── Max OT cap: 4 hours ──
+  if(ot>4){ return toast('⚠ Overtime cannot exceed 4 hours (max total 12h/day)','err'); }
+
+  // ── Max total hours check: 8 base + 4 OT = 12 max ──
+  if(att==='Present'){
+    const existingHrsToday=S.entries
+      .filter(e=>e.emp===emp&&e.date===date)
+      .reduce((a,e)=>a+eTotalHrs(e),0);
+    const newTotal=8+ot+existingHrsToday;
+    if(newTotal>12){
+      return toast(`⚠ This entry would bring ${emp}'s total to ${newTotal}h on ${date}. Max allowed is 12h/day.`,'err');
+    }
+  }
+
+  const job=S.jobs.find(j=>j.sn===sn)||{};
   const entry={
-    date:document.getElementById('e-date').value,
-    sup:document.getElementById('e-sup').value,
-    wo:document.getElementById('e-wo').value,
-    stage:document.getElementById('e-stage').value,
-    emp:document.getElementById('e-emp').value,
-    att,baseHrs:att==='Present'?8:0,ot:att==='Present'?ot:0
+    date, sup, sn,
+    wo:job.wo||sn,
+    customer:job.customer||'',
+    type:job.type||'',
+    stage, emp, att,
+    baseHrs:att==='Present'?8:0,
+    ot:att==='Present'?ot:0
   };
-  if(!entry.date||!entry.sup||!entry.wo||!entry.stage||!entry.emp)return toast('Fill all required fields','err');
-  S.entries.push(entry);save();toast('Entry added');refreshAll();
+  S.entries.push(entry); save(); toast('✅ Entry added'); refreshAll();
 }
 function clearEF(){
   document.getElementById('e-date').value=today();
@@ -1676,14 +1988,29 @@ function openEditEntry(ri){
   document.getElementById('ee-att').value=e.att;
   document.getElementById('ee-ot').value=e.ot||0;
   updateDropdowns();
-  setTimeout(()=>{document.getElementById('ee-sup').value=e.sup;document.getElementById('ee-wo').value=e.wo;document.getElementById('ee-emp').value=e.emp;},30);
+  // ee-wo now uses sn as value
+  setTimeout(()=>{
+    document.getElementById('ee-sup').value=e.sup;
+    document.getElementById('ee-wo').value=e.sn||e.wo; // fallback for old entries
+    document.getElementById('ee-emp').value=e.emp;
+  },30);
   openMo('mo-entry');
 }
 function saveEditEntry(){
   const ri=parseInt(document.getElementById('ee-idx').value);
   const att=document.getElementById('ee-att').value;
   const ot=parseFloat(document.getElementById('ee-ot').value)||0;
-  S.entries[ri]={date:document.getElementById('ee-date').value,sup:document.getElementById('ee-sup').value,wo:document.getElementById('ee-wo').value,stage:document.getElementById('ee-stage').value,emp:document.getElementById('ee-emp').value,att,baseHrs:att==='Present'?8:0,ot:att==='Present'?ot:0};
+  const sn=document.getElementById('ee-wo').value;
+  const job=S.jobs.find(j=>j.sn===sn)||{};
+  S.entries[ri]={
+    date:document.getElementById('ee-date').value,
+    sup:document.getElementById('ee-sup').value,
+    sn:sn, wo:job.wo||sn,
+    customer:job.customer||'', type:job.type||'',
+    stage:document.getElementById('ee-stage').value,
+    emp:document.getElementById('ee-emp').value,
+    att,baseHrs:att==='Present'?8:0,ot:att==='Present'?ot:0
+  };
   save();closeMo('mo-entry');toast('Updated');refreshAll();
 }
 function delEntry(ri){ S.entries.splice(ri,1);save();refreshAll();toast('Deleted','warn'); }
@@ -1695,10 +2022,10 @@ function renderManHours(){
   const tbody=document.getElementById('mh-tb'); tbody.innerHTML='';
   const labels=[],est=[],act=[];
   S.jobs.forEach(j=>{
-    const a=actualHrs(j.wo); const p=j.estMH||0;
+    const a=actualHrs(j.sn); const p=j.estMH||0;
     const pct=p>0?Math.min(Math.round(a/p*100),999):0;
     const rem=Math.max(0,p-a);
-    labels.push(j.wo);est.push(p);act.push(a);
+    labels.push(`#${j.sn}`);est.push(p);act.push(a);
     const bar=pct>=100?'pb-r':pct>=80?'pb-y':'pb-b';
     const al=pct>=100?'<span class="bx bx-h">Exceeded</span>':pct>=90?'<span class="bx bx-m">Critical</span>':pct>=80?'<span class="bx bx-i">Warning</span>':'<span class="bx bx-l">Normal</span>';
     tbody.innerHTML+=`<tr>
@@ -1814,20 +2141,25 @@ function runAtt(){
   const present=rows.filter(e=>e.att==='Present');
   const days=new Set(present.map(e=>e.date)).size;
   const totalHrs=rows.reduce((a,e)=>a+eTotalHrs(e),0);
+  // Group hours by "#SN | WO" label for chart
   const woMap={};
-  present.forEach(e=>{woMap[e.wo]=(woMap[e.wo]||0)+eTotalHrs(e);});
+  present.forEach(e=>{
+    const sn=e.sn||(S.jobs.find(j=>j.wo===e.wo)||{}).sn||e.wo;
+    const lbl=`#${sn}`;
+    woMap[lbl]=(woMap[lbl]||0)+eTotalHrs(e);
+  });
   document.getElementById('att-sum').innerHTML=`
     <div class="col2" style="gap:10px;margin-bottom:10px">
       <div class="kcard kb" style="padding:11px"><div class="klbl">Days Present</div><div class="kval" style="font-size:22px">${days}</div></div>
       <div class="kcard kg" style="padding:11px"><div class="klbl">Total Hours</div><div class="kval" style="font-size:22px">${totalHrs}h</div></div>
     </div>
-    <div class="f11 muted">Projects: <strong style="color:var(--txt)">${Object.keys(woMap).join(', ')||'None'}</strong></div>`;
+    <div class="f11 muted">Serial Numbers: <strong style="color:var(--txt)">${[...new Set(present.map(e=>e.sn||e.wo))].join(', ')||'None'}</strong></div>`;
   const sorted=[...rows].sort((a,b)=>b.date.localeCompare(a.date));
   const tbody=document.getElementById('att-tb'); tbody.innerHTML='';
   sorted.forEach(e=>{
-    const job=S.jobs.find(j=>j.wo===e.wo);
-    const sn=job?job.sn:'—';
-    tbody.innerHTML+=`<tr><td class="muted">${sn}</td><td>${e.date}</td><td>${e.emp}</td><td>${e.sup}</td><td><span class="blue">${e.wo}</span></td><td>${e.stage}</td><td><span class="bx ${e.att==='Present'?'bx-pr':'bx-ab'}">${e.att}</span></td><td class="tacc">${e.baseHrs||0}</td><td class="tacc">${e.ot||0}</td><td class="tacc fw6">${eTotalHrs(e)}</td></tr>`;
+    const sn=e.sn||(S.jobs.find(j=>j.wo===e.wo)||{}).sn||'—';
+    const woDisplay=e.wo||sn;
+    tbody.innerHTML+=`<tr><td class="muted">${sn}</td><td>${e.date}</td><td>${e.emp}</td><td>${e.sup}</td><td><span class="blue">${woDisplay}</span></td><td>${e.stage}</td><td><span class="bx ${e.att==='Present'?'bx-pr':'bx-ab'}">${e.att}</span></td><td class="tacc">${e.baseHrs||0}</td><td class="tacc">${e.ot||0}</td><td class="tacc fw6">${eTotalHrs(e)}</td></tr>`;
   });
   if(!rows.length) tbody.innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--txt3);padding:24px">No records.</td></tr>';
   mkChart('ch-att',{type:'bar',data:{labels:Object.keys(woMap),datasets:[{label:'Hours',data:Object.values(woMap),backgroundColor:'#3b82f6',borderRadius:5,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#94a3b8'},grid:{display:false}},y:{ticks:{color:'#94a3b8'},grid:{color:'rgba(203,213,225,.5)'}}}}});
@@ -1844,7 +2176,7 @@ function renderHistory(){
     <div class="kcard ko"><div class="klbl">Total Logged</div><div class="kval">${S.entries.reduce((a,e)=>a+eTotalHrs(e),0)}h</div></div>`;
   const tbody=document.getElementById('hist-tb'); tbody.innerHTML='';
   comp.forEach(j=>{
-    const a=actualHrs(j.wo); const p=j.estMH||0;
+    const a=actualHrs(j.sn); const p=j.estMH||0;
     const eff=p>0&&a>0?Math.round(p/a*100):100;
     tbody.innerHTML+=`<tr>
       <td class="muted">${j.sn}</td><td><span class="blue fw6">${j.wo}</span></td><td>${j.customer}</td><td>${j.supervisor||'—'}</td>
@@ -1861,15 +2193,16 @@ function renderHistLog(){
   const from=document.getElementById('h-from')?.value||'';
   const to=document.getElementById('h-to')?.value||'';
   let rows=S.entries;
-  if(wof) rows=rows.filter(e=>e.wo===wof);
+  // h-wo now stores sn as value
+  if(wof) rows=rows.filter(e=>(e.sn||e.wo)===wof);
   if(from) rows=rows.filter(e=>e.date>=from);
   if(to) rows=rows.filter(e=>e.date<=to);
   const sorted=[...rows].sort((a,b)=>b.date.localeCompare(a.date));
   const tbody=document.getElementById('h-log-tb'); tbody.innerHTML='';
   sorted.forEach(e=>{
-    const job=S.jobs.find(j=>j.wo===e.wo);
-    const sn=job?job.sn:'—';
-    tbody.innerHTML+=`<tr><td class="muted">${sn}</td><td>${e.date}</td><td>${e.sup}</td><td>${e.emp}</td><td><span class="blue">${e.wo}</span></td><td>${e.stage}</td><td><span class="bx ${e.att==='Present'?'bx-pr':'bx-ab'}">${e.att}</span></td><td class="tacc fw6">${eTotalHrs(e)}h</td></tr>`;
+    const sn=e.sn||(S.jobs.find(j=>j.wo===e.wo)||{}).sn||'—';
+    const woDisplay=e.wo||sn;
+    tbody.innerHTML+=`<tr><td class="muted">${sn}</td><td>${e.date}</td><td>${e.sup}</td><td>${e.emp}</td><td><span class="blue">${woDisplay}</span></td><td>${e.stage}</td><td><span class="bx ${e.att==='Present'?'bx-pr':'bx-ab'}">${e.att}</span></td><td class="tacc fw6">${eTotalHrs(e)}h</td></tr>`;
   });
   if(!rows.length) tbody.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--txt3);padding:24px">No records.</td></tr>';
 }
@@ -1894,6 +2227,126 @@ function renderNotifs(){
   document.getElementById('bdg-mh').textContent=S.mhAlerts.length;
   if(mhEl) mhEl.innerHTML=S.mhAlerts.length===0?'<div class="empty-ni">✅ No man-hour warnings</div>':
     S.mhAlerts.sort((a,b)=>b.th-a.th).map(a=>`<div class="ni warn"><div class="ni-wo">${a.wo} · ${a.customer}</div><div class="ni-desc">⚠ <strong>${a.wo}</strong> has consumed <strong>${a.pct}%</strong> of allocated man hours (${a.act}h used / ${a.plan}h estimated). Ensure production progress matches manpower consumption.</div><div class="ni-meta"><span class="bx bx-h">${a.th}% Threshold</span><span>${a.date}</span></div></div>`).join('');
+}
+
+
+// ═══════════════════════════════════════════
+//  HISTORICAL DATA (PRE-DASHBOARD RECORDS)
+// ═══════════════════════════════════════════
+function renderHistRecords(){
+  const tbody=document.getElementById('hist-records-tb'); if(!tbody)return;
+  const histEntries=S.entries.filter(e=>e.isHistorical);
+  const cntEl=document.getElementById('hist-count'); if(cntEl)cntEl.textContent=histEntries.length;
+  tbody.innerHTML='';
+  [...histEntries].sort((a,b)=>b.date.localeCompare(a.date)).forEach((e,i)=>{
+    const ri=S.entries.indexOf(e);
+    tbody.innerHTML+=`<tr>
+      <td>${e.date}</td><td class="muted">${e.sn||'—'}</td><td>${e.sup}</td><td>${e.emp}</td>
+      <td>${e.stage}</td><td><span class="bx ${e.att==='Present'?'bx-pr':'bx-ab'}">${e.att}</span></td>
+      <td class="tacc">${e.baseHrs||0}</td><td class="tacc">${e.ot||0}</td>
+      <td class="tacc fw6">${eTotalHrs(e)}</td>
+      <td><button class="btn btn-r btn-xs" onclick="delHistEntry(${ri})">🗑️</button></td>
+    </tr>`;
+  });
+  if(!histEntries.length) tbody.innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--txt3);padding:16px">No historical entries yet.</td></tr>';
+}
+
+function addHistEntry(){
+  const date=document.getElementById('hist-date').value;
+  const sup=document.getElementById('hist-sup').value;
+  const sn=document.getElementById('hist-sn').value;
+  const stage=document.getElementById('hist-stage').value;
+  const emp=document.getElementById('hist-emp').value;
+  const att=document.getElementById('hist-att').value;
+  const ot=parseFloat(document.getElementById('hist-ot').value)||0;
+  const stEl=document.getElementById('hist-manual-st');
+  if(!date||!sup||!sn||!stage||!emp){stEl.textContent='⚠ Fill all fields';stEl.style.color='var(--red)';return;}
+  if(ot>4){stEl.textContent='⚠ OT max 4 hours';stEl.style.color='var(--red)';return;}
+  const job=S.jobs.find(j=>j.sn===sn)||{};
+  const entry={date,sup,sn,wo:job.wo||sn,customer:job.customer||'',type:job.type||'',stage,emp,att,baseHrs:att==='Present'?8:0,ot:att==='Present'?ot:0,isHistorical:true};
+  S.entries.push(entry); save();
+  stEl.textContent=`✅ Historical entry added (${emp} — ${date})`;
+  stEl.style.color='var(--green)';
+  // clear form
+  document.getElementById('hist-ot').value='';
+  document.getElementById('hist-emp').value='';
+  renderHistRecords();
+  refreshAll();
+}
+
+function delHistEntry(ri){
+  if(!confirm('Remove this historical entry?'))return;
+  S.entries.splice(ri,1); save(); renderHistRecords(); refreshAll(); toast('Entry removed','warn');
+}
+
+function importHistoricalData(inp){
+  if(!inp||!inp.files||!inp.files[0])return;
+  const file=inp.files[0];
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      const data=new Uint8Array(ev.target.result);
+      const wb=XLSX.read(data,{type:'array',cellDates:true});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const aoa=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:true});
+      if(!aoa||aoa.length<2){toast('No data found in file','err');return;}
+      let added=0,skipped=0;
+      for(let i=1;i<aoa.length;i++){
+        const row=aoa[i];
+        // Cols: Serial(0) · Date(1) · Supervisor(2) · Employee(3) · Stage(4) · Attendance(5) · OT Hrs(6)
+        const sn=String(row[0]||'').trim();
+        const emp=String(row[3]||'').trim();
+        if(!sn||!emp){skipped++;continue;}
+        let dateStr='';
+        const rawDate=row[1];
+        if(rawDate instanceof Date){
+          const y=rawDate.getFullYear(),m=String(rawDate.getMonth()+1).padStart(2,'0'),d=String(rawDate.getDate()).padStart(2,'0');
+          dateStr=`${y}-${m}-${d}`;
+        } else dateStr=fmtDate(rawDate);
+        if(!dateStr){skipped++;continue;}
+        const att=String(row[5]||'Present').trim();
+        const ot=parseFloat(row[6])||0;
+        const job=S.jobs.find(j=>j.sn===sn)||{};
+        S.entries.push({
+          date:dateStr,
+          sup:String(row[2]||'').trim(),
+          sn, wo:job.wo||sn, customer:job.customer||'', type:job.type||'',
+          stage:String(row[4]||'').trim(),
+          emp, att,
+          baseHrs:att==='Present'||att==='present'?8:0,
+          ot:ot>4?4:ot,
+          isHistorical:true
+        });
+        added++;
+      }
+      save();
+      const stEl=document.getElementById('hist-upload-st');
+      if(stEl){stEl.textContent=`✅ Imported ${added} historical entries (${skipped} skipped)`;stEl.style.color='var(--green)';}
+      toast(`Imported ${added} historical entries`);
+      renderHistRecords(); refreshAll();
+    }catch(err){toast('Import error: '+err.message,'err');console.error(err);}
+  };
+  reader.onerror=function(){toast('Failed to read file','err');};
+  reader.readAsArrayBuffer(file);
+  inp.value='';
+}
+
+function dlHistTemplate(){
+  const {utils,write}=XLSX;
+  const data=[
+    ['Serial (Job SN)','Date','Supervisor','Employee Name','Stage','Attendance','Overtime Hrs'],
+    ['1','2026-01-15','Ahmed Hassan','Mohammed Al Rashidi','Fabrication','Present',2],
+    ['2','2026-01-15','Mohamed Ali','Ramesh Patel','Welding','Present',0]
+  ];
+  const ws=utils.aoa_to_sheet(data);
+  const wb=utils.book_new(); utils.book_append_sheet(wb,ws,'Historical');
+  const out=write(wb,{bookType:'xlsx',type:'binary'});
+  const buf=new ArrayBuffer(out.length);
+  const view=new Uint8Array(buf);
+  for(let i=0;i<out.length;i++) view[i]=out.charCodeAt(i)&0xff;
+  const blob=new Blob([buf],{type:'application/octet-stream'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='Historical_Data_Template.xlsx'; a.click();
+  toast('Template downloaded');
 }
 
 // ═══════════════════════════════════════════
@@ -1967,8 +2420,10 @@ function exportPDF1(){
   if(!rows.length){doc.setFontSize(11);doc.setTextColor(180,50,50);doc.text('No entries for '+date,14,y0+12);pdfFtr(doc);doc.save(`Attendance_${date}.pdf`);toast('PDF 1 (no data)');return;}
   const data=rows.map(e=>{
     const mp=S.manpower.find(m=>m.name===e.emp)||{};
-    const job=S.jobs.find(j=>j.wo===e.wo)||{};
-    return[job.sn||'—',e.date,e.sup,e.emp,mp.dept||'—',mp.desig||'—',e.wo,e.stage,e.att,e.baseHrs||0,e.ot||0,eTotalHrs(e)+'h'];
+    // sn is stored directly in entry; fallback to job lookup for old entries
+    const sn=e.sn||(S.jobs.find(j=>j.wo===e.wo)||{}).sn||'—';
+    const woDisplay=e.wo||sn;
+    return[sn,e.date,e.sup,e.emp,mp.dept||'—',mp.desig||'—',woDisplay,e.stage,e.att,e.baseHrs||0,e.ot||0,eTotalHrs(e)+'h'];
   });
   const hs=HS(); hs.didDrawPage=()=>pdfFtr(doc);
   doc.autoTable({startY:y0,head:[['Serial','Date','Supervisor','Employee','Department','Designation','Work Order','Stage','Attendance','Base Hrs','OT Hrs','Total']],body:data,...hs});
@@ -1985,7 +2440,7 @@ function exportPDF2(){
   if(!S.jobs.length){pdfFtr(doc);doc.save(`JobCompletion_${date}.pdf`);toast('No data');return;}
   const now=new Date();
   const data=S.jobs.map(j=>{
-    const a=actualHrs(j.wo); const p=j.estMH||0;
+    const a=actualHrs(j.sn); const p=j.estMH||0;
     const pct=p>0?Math.round(a/p*100):0;
     const ddays=Math.ceil((new Date(j.delivery)-now)/864e5);
     const stat=j.status==='Completed'?'Complete':ddays<7?'DELAYED':'In Progress';
