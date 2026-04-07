@@ -1,0 +1,2681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gorica Arabia Production Management Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#1a56db;--blue2:#1e429f;--blue3:#3f83f8;--blue4:#60a5fa;
+  --blue-lt:#ebf5ff;--blue-lt2:#dbeafe;
+  --bg:#f0f4f9;--bg2:#ffffff;--bg3:#f7f9fc;--bg4:#e9eef5;
+  --border:#d0dce8;--border2:#b5c8de;
+  --txt:#1e293b;--txt2:#475569;--txt3:#94a3b8;
+  --green:#16a34a;--green-lt:#dcfce7;
+  --red:#dc2626;--red-lt:#fee2e2;
+  --yellow:#d97706;--yellow-lt:#fef3c7;
+  --purple:#7c3aed;--purple-lt:#ede9fe;
+  --cyan:#0891b2;--cyan-lt:#cffafe;
+  --shadow:0 1px 6px rgba(26,86,219,.09),0 2px 14px rgba(0,0,0,.06);
+  --r:10px;--rr:7px;
+  --primary-bg: var(--bg);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--primary-bg);color:var(--txt);min-height:100vh;font-size:14px;line-height:1.5;transition:background .3s}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:var(--bg4)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ── LOGIN ── */
+#login-screen{position:fixed;inset:0;background:linear-gradient(135deg,var(--blue2),var(--blue));display:flex;align-items:center;justify-content:center;z-index:9999}
+.login-box{background:#fff;border-radius:16px;padding:36px 40px;width:420px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.25);text-align:center}
+.login-logo-wrap{margin-bottom:14px;min-height:56px;display:flex;align-items:center;justify-content:center}
+#login-logo-img{max-height:56px;max-width:180px;object-fit:contain;display:none;border-radius:6px}
+#login-logo-fallback{font-size:44px}
+.login-title{font-family:'Poppins',sans-serif;font-size:17px;font-weight:700;color:var(--blue2);margin-bottom:3px}
+.login-sub{font-size:11px;color:var(--txt3);margin-bottom:22px}
+.login-err{background:var(--red-lt);color:var(--red);border-radius:var(--rr);padding:8px 12px;font-size:12px;margin-bottom:14px;display:none}
+.login-role-btns{display:flex;gap:8px;margin-bottom:18px}
+.role-btn{flex:1;padding:8px;border:2px solid var(--border);border-radius:var(--rr);background:#fff;font-size:11px;font-weight:600;color:var(--txt3);cursor:pointer;transition:all .2s}
+.role-btn.on{border-color:var(--blue);background:var(--blue-lt2);color:var(--blue)}
+.login-input{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--rr);font-size:13px;margin-bottom:12px;font-family:'Inter',sans-serif;transition:border-color .2s}
+.login-input:focus{border-color:var(--blue3);outline:none}
+.login-btn{width:100%;padding:11px;background:linear-gradient(135deg,var(--blue3),var(--blue2));color:#fff;border:none;border-radius:var(--rr);font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px}
+
+/* ── HEADER ── */
+header{background:linear-gradient(135deg,var(--blue2) 0%,var(--blue) 100%);padding:0 26px;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:200;box-shadow:0 2px 14px rgba(26,86,219,.4)}
+.hdr-l{display:flex;align-items:center;gap:12px}
+#hdr-logo{height:40px;max-width:100px;object-fit:contain;border-radius:6px;background:#fff;padding:3px 6px;display:none}
+.hdr-title{font-family:'Poppins',sans-serif;font-size:16px;font-weight:700;color:#fff;line-height:1.2}
+.hdr-sub{font-size:10px;color:rgba(255,255,255,.65);margin-top:1px}
+.hdr-r{display:flex;align-items:center;gap:16px}
+#clock{font-family:'Poppins',sans-serif;font-size:20px;font-weight:600;color:#fff;letter-spacing:2px}
+#dateline{font-size:10px;color:rgba(255,255,255,.65);text-align:right}
+.role-badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:3px 12px;font-size:11px;color:#fff;font-weight:600}
+.logout-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:var(--rr);padding:5px 12px;color:#fff;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s}
+.logout-btn:hover{background:rgba(255,255,255,.25)}
+.mh-pill{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:600;color:#fff;display:none;cursor:pointer;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+
+/* ── TABS ── */
+.tabbar{background:#fff;border-bottom:2px solid var(--border);display:flex;padding:0 26px;gap:1px;overflow-x:auto;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.tab{font-size:12px;font-weight:500;padding:12px 14px;background:none;border:none;color:var(--txt3);cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;margin-bottom:-2px}
+.tab:hover{color:var(--blue);background:var(--blue-lt)}
+.tab.on{color:var(--blue);border-bottom-color:var(--blue);font-weight:600}
+.tab.hidden{display:none}
+
+/* ── MAIN ── */
+.main{padding:20px 26px;max-width:1900px;margin:0 auto}
+.pane{display:none}.pane.on{display:block}
+
+/* ── SECTION HEADER ── */
+.sh{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.sh-title{font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;color:var(--txt)}
+.sh-line{flex:1;height:1px;background:var(--border)}
+
+/* ── CARDS ── */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;box-shadow:var(--shadow)}
+.card-title{font-size:10px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+
+/* ── KPI ── */
+.kgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:12px;margin-bottom:18px}
+.kcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+.kcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kb::before{background:linear-gradient(90deg,var(--blue3),var(--blue))}
+.kg::before{background:linear-gradient(90deg,#22c55e,var(--green))}
+.kr::before{background:linear-gradient(90deg,#f87171,var(--red))}
+.ko::before{background:linear-gradient(90deg,#fb923c,#ea580c)}
+.kp::before{background:linear-gradient(90deg,#a78bfa,var(--purple))}
+.kc::before{background:linear-gradient(90deg,#22d3ee,var(--cyan))}
+.klbl{font-size:10px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:.7px}
+.kval{font-family:'Poppins',sans-serif;font-size:28px;font-weight:700;line-height:1.1;margin:3px 0}
+.kb .kval{color:var(--blue)}.kg .kval{color:var(--green)}.kr .kval{color:var(--red)}
+.ko .kval{color:#ea580c}.kp .kval{color:var(--purple)}.kc .kval{color:var(--cyan)}
+.ksub{font-size:10px;color:var(--txt3)}
+
+/* ── FORMS ── */
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:11px;margin-bottom:12px}
+.fg{display:flex;flex-direction:column;gap:4px}
+label{font-size:10px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px}
+input,select,textarea{background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--rr);padding:8px 10px;color:var(--txt);font-family:'Inter',sans-serif;font-size:13px;transition:border-color .2s,box-shadow .2s;outline:none;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--blue3);box-shadow:0 0 0 3px rgba(63,131,248,.14)}
+select option{background:#fff}
+textarea{resize:vertical;min-height:68px}
+input[type=file]{display:none}
+input[type=color]{height:38px;padding:3px;cursor:pointer}
+
+/* ── BUTTONS ── */
+.btn{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;padding:8px 18px;border:none;border-radius:var(--rr);cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
+.btn:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,0,0,.12)}
+.btn-p{background:linear-gradient(135deg,var(--blue3),var(--blue));color:#fff}
+.btn-s{background:#fff;border:1.5px solid var(--border2);color:var(--txt2)}
+.btn-s:hover{border-color:var(--blue);color:var(--blue)}
+.btn-g{background:linear-gradient(135deg,#4ade80,var(--green));color:#fff}
+.btn-r{background:linear-gradient(135deg,#f87171,var(--red));color:#fff}
+.btn-b{background:linear-gradient(135deg,#60a5fa,var(--blue));color:#fff}
+.btn-y{background:linear-gradient(135deg,#fbbf24,var(--yellow));color:#fff}
+.btn-sm{font-size:11px;padding:6px 13px}
+.btn-xs{font-size:10px;padding:3px 9px}
+
+/* ── TABLE ── */
+.tw{overflow-x:auto;border-radius:var(--rr)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{font-size:10px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;padding:9px 11px;text-align:left;background:var(--bg3);border-bottom:2px solid var(--border);white-space:nowrap}
+td{padding:9px 11px;border-bottom:1px solid var(--border);color:var(--txt2);vertical-align:middle}
+tr:hover td{background:var(--blue-lt)}
+
+/* ── BADGES ── */
+.bx{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;padding:2px 8px;border-radius:20px}
+.bx-o{background:var(--red-lt);color:var(--red)}
+.bx-i{background:var(--yellow-lt);color:var(--yellow)}
+.bx-r{background:var(--green-lt);color:var(--green)}
+.bx-h{background:var(--red-lt);color:var(--red)}
+.bx-m{background:var(--yellow-lt);color:var(--yellow)}
+.bx-l{background:var(--blue-lt2);color:var(--blue)}
+.bx-pr{background:var(--green-lt);color:var(--green)}
+.bx-ab{background:var(--red-lt);color:var(--red)}
+.bx-done{background:var(--green-lt);color:var(--green)}
+.bx-prog{background:var(--yellow-lt);color:var(--yellow)}
+.bx-del{background:var(--red-lt);color:var(--red)}
+
+/* ── PROGRESS ── */
+.pb{background:var(--bg4);border-radius:4px;overflow:hidden}
+.pb-f{height:100%;border-radius:4px;transition:width .5s ease}
+.pb-g{background:linear-gradient(90deg,#4ade80,var(--green))}
+.pb-y{background:linear-gradient(90deg,#fbbf24,var(--yellow))}
+.pb-r{background:linear-gradient(90deg,#f87171,var(--red))}
+.pb-b{background:linear-gradient(90deg,#60a5fa,var(--blue))}
+.pb-o{background:linear-gradient(90deg,#fb923c,#ea580c)}
+
+/* ── SUP PANELS ── */
+.sup-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:20px}
+.sup-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+.sup-hdr{padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);background:var(--bg3)}
+.sup-av{width:48px;height:48px;border-radius:50%;object-fit:cover;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-size:18px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden}
+.sup-av img{width:100%;height:100%;object-fit:cover}
+.sup-name{font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;color:var(--txt)}
+.sup-role{font-size:10px;color:var(--txt3);margin-top:1px}
+.sup-body{padding:12px}
+.sup-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:11px}
+.ss{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rr);padding:8px 10px;text-align:center}
+.ss-v{font-family:'Poppins',sans-serif;font-size:18px;font-weight:700;line-height:1;color:var(--blue)}
+.ss-l{font-size:8px;color:var(--txt3);text-transform:uppercase;letter-spacing:.6px;margin-top:3px}
+.stage-row{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.sl{font-size:10px;color:var(--txt2);width:76px;flex-shrink:0;font-weight:500}
+.sp{font-size:10px;color:var(--txt3);width:22px;text-align:right;flex-shrink:0}
+.ch-wrap{height:110px;position:relative}
+
+/* ── NOTIF PANELS ── */
+.np-grid{display:grid;gap:14px}
+.np{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+.np-hdr{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--bg3)}
+.np-title{font-size:12px;font-weight:600;color:var(--txt)}
+.np-badge{font-size:11px;font-weight:700;padding:1px 8px;border-radius:20px;background:var(--red-lt);color:var(--red)}
+.np-body{padding:9px;max-height:220px;overflow-y:auto}
+.ni{border-radius:var(--rr);padding:9px 11px;margin-bottom:6px;border-left:3px solid;background:var(--bg3)}
+.ni.high{border-color:var(--red)}.ni.medium{border-color:var(--yellow)}.ni.low{border-color:var(--blue)}.ni.warn{border-color:#f59e0b;background:#fffbeb}
+.ni-wo{font-size:10px;font-weight:700;color:var(--txt2);margin-bottom:2px}
+.ni-desc{font-size:11px;color:var(--txt);line-height:1.4;margin-bottom:4px}
+.ni-meta{font-size:9px;color:var(--txt3);display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.empty-ni{text-align:center;padding:22px;color:var(--txt3);font-size:11px}
+
+/* ── IMPORT ── */
+.ibox{background:var(--bg2);border:2px dashed var(--border2);border-radius:var(--r);padding:20px;text-align:center;transition:border-color .2s,background .2s}
+.ibox:hover{border-color:var(--blue);background:var(--blue-lt)}
+.iico{font-size:28px;margin-bottom:7px}
+.ititle{font-size:12px;font-weight:700;color:var(--txt);margin-bottom:5px}
+.ihint{font-size:11px;color:var(--txt3);line-height:1.5;margin-bottom:11px}
+.flbl{display:inline-block;background:var(--blue-lt2);color:var(--blue);font-size:11px;font-weight:600;padding:7px 16px;border-radius:var(--rr);cursor:pointer;transition:all .2s;border:1.5px solid var(--blue3)}
+.flbl:hover{background:var(--blue);color:#fff}
+
+/* ── MODAL ── */
+.mo{display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:500;align-items:center;justify-content:center}
+.mo.on{display:flex}
+.md{background:#fff;border-radius:var(--r);padding:22px;width:560px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.2);max-height:90vh;overflow-y:auto}
+.md-lg{width:720px}
+.md-title{font-family:'Poppins',sans-serif;font-size:16px;font-weight:600;color:var(--txt);margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.md-close{background:var(--bg3);border:1px solid var(--border);color:var(--txt3);font-size:14px;cursor:pointer;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.md-close:hover{background:var(--red-lt);color:var(--red)}
+
+/* ── SETTINGS ── */
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)}
+.setting-row:last-child{border-bottom:none}
+.setting-label{font-size:13px;font-weight:500;color:var(--txt)}
+.setting-desc{font-size:11px;color:var(--txt3);margin-top:2px}
+.dept-item{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg3);border-radius:var(--rr);margin-bottom:7px;border:1px solid var(--border)}
+.dept-name{flex:1;font-size:13px;font-weight:500;color:var(--txt)}
+
+/* ── COLOR PICKER ── */
+.color-palette{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-bottom:10px}
+.cp-swatch{width:28px;height:28px;border-radius:4px;cursor:pointer;border:2px solid transparent;transition:all .15s}
+.cp-swatch:hover{transform:scale(1.15);border-color:#fff;box-shadow:0 0 0 2px var(--blue)}
+.cp-swatch.on{border-color:#fff;box-shadow:0 0 0 2px var(--blue)}
+
+/* ── WARN TAG ── */
+.wt{display:inline-flex;align-items:center;gap:2px;font-size:9px;font-weight:700;color:var(--red);background:var(--red-lt);border-radius:4px;padding:1px 6px}
+
+/* ── TOAST ── */
+.tc{position:fixed;top:72px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:6px}
+.toast{background:#fff;border:1px solid var(--border);border-left:4px solid var(--green);border-radius:var(--rr);padding:9px 13px;min-width:230px;font-size:12px;box-shadow:var(--shadow);animation:tsIn .3s ease}
+.toast.err{border-left-color:var(--red)}.toast.warn{border-left-color:var(--yellow)}
+@keyframes tsIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+
+/* ── UTILS ── */
+.col2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.col3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.mb14{margin-bottom:14px}.mb20{margin-bottom:20px}
+.mt10{margin-top:10px}.mt14{margin-top:14px}
+.flex{display:flex}.ai-c{align-items:center}.gap8{gap:8px}.gap10{gap:10px}
+.tacc{text-align:center}.fw6{font-weight:600}
+.blue{color:var(--blue)}.grn{color:var(--green)}.red{color:var(--red)}.muted{color:var(--txt3)}
+.f12{font-size:12px}.f11{font-size:11px}.f10{font-size:10px}
+.info-box{background:var(--blue-lt);border:1px solid var(--blue-lt2);border-radius:var(--rr);padding:9px 13px;font-size:11px;color:var(--blue);margin-bottom:12px}
+.divider{height:1px;background:var(--border);margin:14px 0}
+.sort-icon{color:var(--txt3);font-size:9px;margin-left:2px}
+th.sort-asc .sort-icon::after{content:" ▲";color:var(--blue)}
+th.sort-desc .sort-icon::after{content:" ▼";color:var(--blue)}
+@media(max-width:1100px){.sup-grid,.col3{grid-template-columns:1fr}.col2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ════════ LOGIN ════════ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo-wrap">
+      <img id="login-logo-img" src="" alt="Logo">
+      <span id="login-logo-fallback">🏭</span>
+    </div>
+    <div class="login-title" id="login-title-txt">Gorica Arabia</div>
+    <div class="login-sub" id="login-sub-txt">Production Management Dashboard</div>
+    <div id="login-err" class="login-err">Invalid username or password</div>
+    <div class="login-role-btns">
+      <button class="role-btn on" onclick="selRole('admin',this)">👑 Admin</button>
+      <button class="role-btn" onclick="selRole('supervisor',this)">👷 Supervisor</button>
+      <button class="role-btn" onclick="selRole('viewer',this)">👁 Viewer</button>
+    </div>
+    <input class="login-input" id="login-user" placeholder="Username" type="text" onkeydown="if(event.key==='Enter')doLogin()">
+    <input class="login-input" id="login-pass" placeholder="Password" type="password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Sign In →</button>
+  </div>
+</div>
+
+<!-- ════════ HEADER ════════ -->
+<header>
+  <div class="hdr-l">
+    <img id="hdr-logo" src="" alt="">
+    <div>
+      <div class="hdr-title" id="hdr-title">Gorica Arabia Production Management Dashboard</div>
+      <div class="hdr-sub" id="hdr-sub">Gorica Arabia Limited</div>
+    </div>
+  </div>
+  <div class="hdr-r">
+    <div class="mh-pill" id="mh-pill">⚠ Man-Hour Alerts</div>
+    <div class="role-badge" id="role-badge">—</div>
+    <div>
+      <div id="clock">00:00:00</div>
+      <div id="dateline"></div>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+  </div>
+</header>
+
+<!-- ════════ TABS ════════ -->
+<div class="tabbar">
+  <button class="tab on"  data-tab="overview"   onclick="gTab('overview',this)">📊 Overview</button>
+  <button class="tab"     data-tab="import"      onclick="gTab('import',this)">📥 Import</button>
+  <button class="tab"     data-tab="jobs"        onclick="gTab('jobs',this)">📋 Job Orders</button>
+  <button class="tab"     data-tab="supers"      onclick="gTab('supers',this)">👷 Supervisors</button>
+  <button class="tab"     data-tab="daily"       onclick="gTab('daily',this)">📝 Daily Entry</button>
+  <button class="tab"     data-tab="manhours"    onclick="gTab('manhours',this)">⏱ Man-Hours</button>
+  <button class="tab"     data-tab="issues"      onclick="gTab('issues',this)">⚠️ Issues</button>
+  <button class="tab"     data-tab="manpower"    onclick="gTab('manpower',this)">👥 Manpower</button>
+  <button class="tab"     data-tab="attendance"  onclick="gTab('attendance',this)">✅ Attendance</button>
+  <button class="tab"     data-tab="history"     onclick="gTab('history',this)">📁 History</button>
+  <button class="tab"     data-tab="notifs"      onclick="gTab('notifs',this)">🔔 Alerts <span id="nb" style="color:var(--red);font-weight:700"></span></button>
+  <button class="tab"     data-tab="reports"     onclick="gTab('reports',this)">📄 Reports</button>
+  <button class="tab"     data-tab="settings"    onclick="gTab('settings',this)">⚙️ Settings</button>
+</div>
+
+<div class="main">
+
+<!-- ════════ OVERVIEW ════════ -->
+<div id="pane-overview" class="pane on">
+  <div class="kgrid" id="ov-kpis"></div>
+  <!-- MH comparison chart with horizontal scroll -->
+  <div class="card mb20">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div class="card-title" style="margin:0">Estimated vs Actual Man Hours — All Work Orders</div>
+      <div style="font-size:10px;color:var(--txt3)">← Scroll horizontally to see all →</div>
+    </div>
+    <div style="overflow-x:auto;overflow-y:hidden;cursor:grab;user-select:none" id="mh-chart-scroll">
+      <div id="mh-chart-inner" style="min-width:100%">
+        <canvas id="ch-mh-ov" style="display:block"></canvas>
+      </div>
+    </div>
+  </div>
+  <!-- Only vehicle type donut remains -->
+  <div class="card mb20" style="max-width:420px">
+    <div class="card-title">Production by Vehicle Type</div>
+    <div style="height:200px;position:relative"><canvas id="ch-type"></canvas></div>
+  </div>
+  <!-- Sortable/filterable Work Orders table -->
+  <div class="sh"><div class="sh-title">All Work Orders</div><div class="sh-line"></div></div>
+  <div class="card mb20">
+    <!-- Filter bar -->
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center">
+      <input id="ov-f-sn"       placeholder="🔍 Serial"       style="width:80px;padding:5px 8px;font-size:11px" oninput="applyOvFilters()">
+      <input id="ov-f-wo"       placeholder="🔍 Work Order"    style="width:110px;padding:5px 8px;font-size:11px" oninput="applyOvFilters()">
+      <input id="ov-f-cust"     placeholder="🔍 Customer"      style="width:120px;padding:5px 8px;font-size:11px" oninput="applyOvFilters()">
+      <input id="ov-f-type"     placeholder="🔍 Vehicle Type"  style="width:120px;padding:5px 8px;font-size:11px" oninput="applyOvFilters()">
+      <input id="ov-f-sup"      placeholder="🔍 Supervisor"    style="width:110px;padding:5px 8px;font-size:11px" oninput="applyOvFilters()">
+      <select id="ov-f-status"  style="width:110px;padding:5px 8px;font-size:11px" onchange="applyOvFilters()">
+        <option value="">All Status</option>
+        <option>In Progress</option><option>Completed</option><option>On Hold</option>
+      </select>
+      <button class="btn btn-s btn-xs" onclick="clearOvFilters()">✕ Clear</button>
+      <span id="ov-filter-count" class="f10 muted" style="margin-left:4px"></span>
+    </div>
+    <div class="tw"><table id="ov-table">
+      <thead><tr>
+        <th onclick="sortOvTable(0)" style="cursor:pointer">Serial <span class="sort-icon">⇅</span></th>
+        <th onclick="sortOvTable(1)" style="cursor:pointer">Work Order <span class="sort-icon">⇅</span></th>
+        <th onclick="sortOvTable(2)" style="cursor:pointer">Customer <span class="sort-icon">⇅</span></th>
+        <th onclick="sortOvTable(3)" style="cursor:pointer">Vehicle Type <span class="sort-icon">⇅</span></th>
+        <th onclick="sortOvTable(4)" style="cursor:pointer">Delivery <span class="sort-icon">⇅</span></th>
+        <th onclick="sortOvTable(5)" style="cursor:pointer">Supervisor <span class="sort-icon">⇅</span></th>
+        <th onclick="sortOvTable(6)" style="cursor:pointer">Est. Hrs <span class="sort-icon">⇅</span></th>
+        <th onclick="sortOvTable(7)" style="cursor:pointer">Actual Hrs <span class="sort-icon">⇅</span></th>
+        <th style="background:#eff6ff;color:#1a56db;white-space:nowrap" title="Required Man-Hours per day to finish on time">Req. MH/Day 🎯</th>
+        <th style="background:#eff6ff;color:#1a56db;white-space:nowrap" title="Average man-hours per working day so far">Curr. MH/Day 📈</th>
+        <th style="background:#eff6ff;color:#1a56db;white-space:nowrap" title="Rate comparison — on track vs required">Rate Status</th>
+        <th>MH Usage</th>
+        <th onclick="sortOvTable(12)" style="cursor:pointer">Status <span class="sort-icon">⇅</span></th>
+      </tr></thead>
+      <tbody id="ov-jobs"></tbody>
+    </table></div>
+  </div>
+  <!-- Rate metrics legend -->
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;font-size:11px;color:var(--txt2);align-items:center;padding:10px 14px;background:#f8fbff;border-radius:var(--rr);border:1px solid var(--blue-lt2)">
+    <span style="font-weight:600;color:var(--blue)">📊 Rate Guide:</span>
+    <span><strong style="color:var(--blue)">Req. MH/Day 🎯</strong> = Hours needed per working day to finish by delivery date</span>
+    <span style="color:var(--border2)">|</span>
+    <span><strong style="color:var(--blue)">Curr. MH/Day 📈</strong> = Avg hours entered per day worked so far</span>
+    <span style="color:var(--border2)">|</span>
+    <span style="color:var(--green);font-weight:600">✅ On Track</span><span>Curr ≥ Req</span>
+    <span style="color:var(--yellow);font-weight:600">⚠ Behind</span><span>Curr 70–99%</span>
+    <span style="color:var(--red);font-weight:600">🔴 Critical</span><span>Curr &lt;70%</span>
+  </div>
+</div>
+<div id="pane-import" class="pane">
+  <div class="sh"><div class="sh-title">Import Data from Excel</div><div class="sh-line"></div></div>
+  <div class="info-box">ℹ All rows are imported without limit. Download templates below for the correct column format.</div>
+  <div class="col2 mb20">
+    <div class="ibox">
+      <div class="iico">📋</div>
+      <div class="ititle">Job Orders Excel</div>
+      <div class="ihint"><strong>Columns:</strong><br>Serial Number · Work Order · Customer · Vehicle Type · Delivery Date · Estimated Man Hours · Supervisor</div>
+      <label class="flbl" for="f-jobs">📂 Choose File</label>
+      <input type="file" id="f-jobs" accept=".xlsx,.xls,.csv" onchange="importJobs(this)">
+      <div id="st-jobs" class="mt10 f11 muted"></div>
+    </div>
+    <div class="ibox">
+      <div class="iico">👥</div>
+      <div class="ititle">Manpower Excel</div>
+      <div class="ihint"><strong>Columns:</strong><br>Employee ID · Employee Name · Department · Supervisor · Designation</div>
+      <label class="flbl" for="f-mp">📂 Choose File</label>
+      <input type="file" id="f-mp" accept=".xlsx,.xls,.csv" onchange="importManpower(this)">
+      <div id="st-mp" class="mt10 f11 muted"></div>
+    </div>
+  </div>
+  <div class="card mb20">
+    <div class="card-title">Download Templates</div>
+    <div class="flex gap8 mt10">
+      <button class="btn btn-b btn-sm" onclick="dlTemplate('jobs')">⬇ Job Orders Template (.xlsx)</button>
+      <button class="btn btn-b btn-sm" onclick="dlTemplate('mp')">⬇ Manpower Template (.xlsx)</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Quick Start</div>
+    <p class="f12 mb14" style="color:var(--txt2)">Load sample data to explore all features instantly.</p>
+    <div class="flex gap8">
+      <button class="btn btn-p" onclick="loadSample()">🚀 Load Sample Data</button>
+      <button class="btn btn-s" onclick="clearAll()">🗑️ Clear All Data</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ JOB ORDERS ════════ -->
+<div id="pane-jobs" class="pane">
+  <div class="sh"><div class="sh-title">Job Orders</div><div class="sh-line"></div>
+    <button class="btn btn-p btn-sm" id="btn-add-job" onclick="openJobMo()">+ Add Job Order</button>
+  </div>
+  <div class="card mb20">
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center">
+      <input id="jf-sn"     placeholder="🔍 Serial"       style="width:80px;padding:5px 8px;font-size:11px;border:1.5px solid var(--border);border-radius:var(--rr);background:var(--bg3)" oninput="applyJobFilters()">
+      <input id="jf-wo"     placeholder="🔍 Work Order"   style="width:110px;padding:5px 8px;font-size:11px;border:1.5px solid var(--border);border-radius:var(--rr);background:var(--bg3)" oninput="applyJobFilters()">
+      <input id="jf-cust"   placeholder="🔍 Customer"     style="width:120px;padding:5px 8px;font-size:11px;border:1.5px solid var(--border);border-radius:var(--rr);background:var(--bg3)" oninput="applyJobFilters()">
+      <input id="jf-type"   placeholder="🔍 Vehicle Type" style="width:130px;padding:5px 8px;font-size:11px;border:1.5px solid var(--border);border-radius:var(--rr);background:var(--bg3)" oninput="applyJobFilters()">
+      <input id="jf-sup"    placeholder="🔍 Supervisor"   style="width:110px;padding:5px 8px;font-size:11px;border:1.5px solid var(--border);border-radius:var(--rr);background:var(--bg3)" oninput="applyJobFilters()">
+      <select id="jf-status" style="width:110px;padding:5px 8px;font-size:11px;border:1.5px solid var(--border);border-radius:var(--rr);background:var(--bg3)" onchange="applyJobFilters()">
+        <option value="">All Status</option><option>In Progress</option><option>Completed</option><option>On Hold</option>
+      </select>
+      <button class="btn btn-s btn-xs" onclick="clearJobFilters()">✕ Clear</button>
+      <span id="jf-count" class="f10 muted"></span>
+    </div>
+    <div class="tw"><table>
+      <thead><tr>
+        <th onclick="sortJobTable(0)" style="cursor:pointer">Serial <span class="sort-icon">⇅</span></th>
+        <th onclick="sortJobTable(1)" style="cursor:pointer">Work Order <span class="sort-icon">⇅</span></th>
+        <th onclick="sortJobTable(2)" style="cursor:pointer">Customer <span class="sort-icon">⇅</span></th>
+        <th onclick="sortJobTable(3)" style="cursor:pointer">Vehicle Type <span class="sort-icon">⇅</span></th>
+        <th onclick="sortJobTable(4)" style="cursor:pointer">Delivery <span class="sort-icon">⇅</span></th>
+        <th onclick="sortJobTable(5)" style="cursor:pointer">Est. Man Hrs <span class="sort-icon">⇅</span></th>
+        <th onclick="sortJobTable(6)" style="cursor:pointer">Supervisor <span class="sort-icon">⇅</span></th>
+        <th onclick="sortJobTable(7)" style="cursor:pointer">Status <span class="sort-icon">⇅</span></th>
+        <th>Actions</th>
+      </tr></thead>
+      <tbody id="jobs-tb"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ════════ SUPERVISORS ════════ -->
+<div id="pane-supers" class="pane">
+  <div class="sh"><div class="sh-title">Supervisor Panels</div><div class="sh-line"></div></div>
+  <div class="sup-grid" id="sup-panels"></div>
+</div>
+
+<!-- ════════ DAILY ENTRY ════════ -->
+<div id="pane-daily" class="pane">
+  <div class="sh"><div class="sh-title">Daily Work Entry</div><div class="sh-line"></div></div>
+  <div class="card mb20">
+    <div class="info-box">Present = 8 hours automatically. Enter overtime hours separately if applicable.</div>
+    <div class="fgrid">
+      <div class="fg"><label>Date</label><input type="date" id="e-date"></div>
+      <div class="fg"><label>Supervisor</label><select id="e-sup"><option value="">— Select —</option></select></div>
+      <div class="fg"><label>Work Order</label><select id="e-wo"><option value="">— Select —</option></select></div>
+      <div class="fg"><label>Stage</label>
+        <select id="e-stage">
+          <option value="">— Select —</option>
+          <option>Preparation</option><option>Fabrication</option><option>Assembly</option>
+          <option>Welding</option><option>Painting</option><option>Finishing</option>
+        </select>
+      </div>
+      <div class="fg"><label>Employee</label><select id="e-emp"><option value="">— Select —</option></select></div>
+      <div class="fg"><label>Attendance</label>
+        <select id="e-att"><option value="Present">✅ Present (8 hrs)</option><option value="Absent">❌ Absent (0 hrs)</option></select>
+      </div>
+      <div class="fg"><label>Overtime Hours <span style="color:var(--txt3);font-weight:400">(max 4)</span></label><input type="number" id="e-ot" min="0" max="4" step=".5" placeholder="0"></div>
+    </div>
+    <div class="flex gap8">
+      <button class="btn btn-p" onclick="addEntry()">+ Add Entry</button>
+      <button class="btn btn-s" onclick="clearEF()">Clear</button>
+    </div>
+  </div>
+  <div class="sh"><div class="sh-title">Entries</div><div class="sh-line"></div>
+    <input type="date" id="ef-date" style="padding:6px 10px;border-radius:var(--rr);border:1.5px solid var(--border);font-size:12px" onchange="renderEntries()">
+    <button class="btn btn-s btn-sm" onclick="document.getElementById('ef-date').value='';renderEntries()">All</button>
+  </div>
+  <div class="card">
+    <div class="tw"><table><thead><tr>
+      <th>Serial</th><th>Date</th><th>Supervisor</th><th>Employee</th><th>Work Order</th>
+      <th>Stage</th><th>Attendance</th><th>Base Hrs</th><th>OT Hrs</th><th>Total Hrs</th><th>Actions</th>
+    </tr></thead><tbody id="entry-tb"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ════════ MAN-HOURS ════════ -->
+<div id="pane-manhours" class="pane">
+  <div class="sh"><div class="sh-title">Man-Hour Tracking</div><div class="sh-line"></div></div>
+  <div class="col2 mb20">
+    <div class="card"><div class="card-title">Planned vs Actual — All Work Orders</div><div style="height:220px;position:relative"><canvas id="ch-mh-det"></canvas></div></div>
+    <div class="card"><div class="card-title">Active Threshold Alerts</div><div id="mh-alert-list" style="max-height:220px;overflow-y:auto"></div></div>
+  </div>
+  <div class="card">
+    <div class="tw"><table><thead><tr>
+      <th>Serial</th><th>Work Order</th><th>Customer</th><th>Supervisor</th>
+      <th>Est. Hrs</th><th>Actual Hrs</th><th>Remaining</th><th>% Used</th><th>Utilization</th><th>Alert</th>
+    </tr></thead><tbody id="mh-tb"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ════════ ISSUES ════════ -->
+<div id="pane-issues" class="pane">
+  <div class="sh"><div class="sh-title">Issue Management</div><div class="sh-line"></div></div>
+  <div class="col2 mb20">
+    <div class="card">
+      <div class="card-title">Raise New Issue</div>
+      <div class="fgrid" style="grid-template-columns:1fr 1fr">
+        <div class="fg"><label>Date</label><input type="date" id="i-date"></div>
+        <div class="fg"><label>Work Order</label><select id="i-wo"><option value="">— Select —</option></select></div>
+        <div class="fg"><label>Department</label><select id="i-dept"><option value="">— Select —</option></select></div>
+        <div class="fg"><label>Priority</label><select id="i-pri"><option>Low</option><option>Medium</option><option selected>High</option></select></div>
+        <div class="fg"><label>Raised By</label><select id="i-by"></select></div>
+        <div class="fg"><label>Status</label><select id="i-stat"><option>Open</option><option>In Progress</option><option>Resolved</option></select></div>
+      </div>
+      <div class="fg mb14"><label>Description</label><textarea id="i-desc" placeholder="Describe the issue…"></textarea></div>
+      <button class="btn btn-r" onclick="submitIssue()">⚠️ Submit Issue</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Summary</div>
+      <div style="height:170px;position:relative;margin-bottom:10px"><canvas id="ch-iss"></canvas></div>
+      <div class="col3">
+        <div class="kcard kr"><div class="klbl">Open</div><div class="kval" id="ic-o">0</div></div>
+        <div class="kcard ko"><div class="klbl">In Progress</div><div class="kval" id="ic-i">0</div></div>
+        <div class="kcard kg"><div class="klbl">Resolved</div><div class="kval" id="ic-r">0</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="sh"><div class="sh-title">All Issues</div><div class="sh-line"></div></div>
+  <div class="card">
+    <div class="tw"><table><thead><tr>
+      <th>Date</th><th>Work Order</th><th>Dept</th><th>Description</th>
+      <th>Priority</th><th>Raised By</th><th>Status</th><th>Remarks</th><th>Actions</th>
+    </tr></thead><tbody id="iss-tb"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ════════ MANPOWER ════════ -->
+<div id="pane-manpower" class="pane">
+  <div class="sh"><div class="sh-title">Employee Database</div><div class="sh-line"></div>
+    <button class="btn btn-p btn-sm" onclick="openEmpMo()">+ Add Employee</button>
+  </div>
+  <div class="kgrid mb14" id="mp-kpis"></div>
+  <div class="card">
+    <div class="tw"><table><thead><tr>
+      <th>Emp ID</th><th>Name</th><th>Department</th><th>Supervisor</th><th>Designation</th><th>Actions</th>
+    </tr></thead><tbody id="mp-tb"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ════════ ATTENDANCE ════════ -->
+<div id="pane-attendance" class="pane">
+  <div class="sh"><div class="sh-title">Attendance &amp; Work History</div><div class="sh-line"></div></div>
+  <div class="card mb14">
+    <div class="fgrid" style="grid-template-columns:1fr 1fr 1fr 1fr">
+      <div class="fg"><label>Employee</label><select id="att-emp"><option value="">All</option></select></div>
+      <div class="fg"><label>From</label><input type="date" id="att-from"></div>
+      <div class="fg"><label>To</label><input type="date" id="att-to"></div>
+      <div class="fg"><label>Quick Filter</label>
+        <select id="att-q" onchange="setAttQ()">
+          <option value="">Custom</option><option value="7">7 Days</option>
+          <option value="30">30 Days</option><option value="90">3 Months</option><option value="365">1 Year</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-p btn-sm" onclick="runAtt()">🔍 Generate Report</button>
+  </div>
+  <div class="col2 mb14">
+    <div class="card"><div class="card-title">Summary</div><div id="att-sum"></div></div>
+    <div class="card"><div class="card-title">Hours by Work Order</div><div style="height:180px;position:relative"><canvas id="ch-att"></canvas></div></div>
+  </div>
+  <div class="card">
+    <div class="tw"><table><thead><tr>
+      <th>Serial</th><th>Date</th><th>Employee</th><th>Supervisor</th><th>Work Order</th>
+      <th>Stage</th><th>Attendance</th><th>Base Hrs</th><th>OT Hrs</th><th>Total Hrs</th>
+    </tr></thead><tbody id="att-tb"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ════════ HISTORY ════════ -->
+<div id="pane-history" class="pane">
+  <div class="sh"><div class="sh-title">Completed Work Orders</div><div class="sh-line"></div></div>
+  <div class="kgrid mb14" id="hist-kpis"></div>
+  <div class="card mb14">
+    <div class="tw"><table><thead><tr>
+      <th>Serial</th><th>Work Order</th><th>Customer</th><th>Supervisor</th>
+      <th>Est. Hrs</th><th>Actual Hrs</th><th>Efficiency</th><th>Delivery</th>
+    </tr></thead><tbody id="hist-tb"></tbody></table></div>
+  </div>
+  <div class="sh"><div class="sh-title">Historical Entries</div><div class="sh-line"></div></div>
+  <div class="card">
+    <div class="fgrid mb14" style="grid-template-columns:1fr 1fr 1fr">
+      <div class="fg"><label>Work Order</label><select id="h-wo"><option value="">All</option></select></div>
+      <div class="fg"><label>From</label><input type="date" id="h-from"></div>
+      <div class="fg"><label>To</label><input type="date" id="h-to"></div>
+    </div>
+    <button class="btn btn-b btn-sm mb14" onclick="renderHistLog()">🔍 Filter</button>
+    <div class="tw"><table><thead><tr>
+      <th>Serial</th><th>Date</th><th>Supervisor</th><th>Employee</th><th>Work Order</th>
+      <th>Stage</th><th>Attendance</th><th>Total Hrs</th>
+    </tr></thead><tbody id="h-log-tb"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ════════ NOTIFICATIONS ════════ -->
+<div id="pane-notifs" class="pane">
+  <div class="sh"><div class="sh-title">Department Alerts</div><div class="sh-line"></div></div>
+  <div class="np-grid" id="np-dept-grid"></div>
+  <div class="sh mt14"><div class="sh-title">⏱ Man-Hour Alerts</div><div class="sh-line"></div></div>
+  <div class="np mb20">
+    <div class="np-hdr"><span class="np-title">⚠ Man-Hour Warnings</span><span class="np-badge" id="bdg-mh">0</span></div>
+    <div class="np-body" id="np-mh"></div>
+  </div>
+</div>
+
+<!-- ════════ REPORTS ════════ -->
+<div id="pane-reports" class="pane">
+  <div class="sh"><div class="sh-title">Export Reports</div><div class="sh-line"></div></div>
+  <div class="flex gap8 mb20 ai-c">
+    <label style="margin:0">Report Date:</label>
+    <input type="date" id="rep-date" style="padding:7px 10px;border-radius:var(--rr);border:1.5px solid var(--border);font-size:12px;width:155px">
+    <button class="btn btn-s btn-sm" onclick="document.getElementById('rep-date').value=today()">Today</button>
+  </div>
+  <div class="col3 mb20">
+    <div class="card" style="border-top:3px solid var(--green)">
+      <div style="font-size:26px;margin-bottom:7px">👷</div>
+      <div class="fw6 f12 mb14" style="color:var(--green)">PDF 1 — Daily Attendance</div>
+      <p class="f11 muted mb14">All employees who attended, hours logged, work order and stage.</p>
+      <button class="btn btn-g" style="width:100%" onclick="exportPDF1()">⬇ Export</button>
+    </div>
+    <div class="card" style="border-top:3px solid var(--blue)">
+      <div style="font-size:26px;margin-bottom:7px">🏭</div>
+      <div class="fw6 f12 mb14" style="color:var(--blue)">PDF 2 — Job Order Completion</div>
+      <p class="f11 muted mb14">Production progress per work order with man-hour utilization.</p>
+      <button class="btn btn-b" style="width:100%" onclick="exportPDF2()">⬇ Export</button>
+    </div>
+    <div class="card" style="border-top:3px solid var(--red)">
+      <div style="font-size:26px;margin-bottom:7px">⚠️</div>
+      <div class="fw6 f12 mb14" style="color:var(--red)">PDF 3 — Pending Issues</div>
+      <p class="f11 muted mb14">All unresolved issues across departments.</p>
+      <button class="btn btn-r" style="width:100%" onclick="exportPDF3()">⬇ Export</button>
+    </div>
+  </div>
+  <div class="card tacc mb20" style="padding:20px">
+    <button class="btn btn-p" style="font-size:13px;padding:10px 30px" onclick="exportAll()">📦 Export All 3 Reports</button>
+  </div>
+  <div class="divider"></div>
+  <div class="sh mt14"><div class="sh-title">Data Backup</div><div class="sh-line"></div></div>
+  <div class="col2">
+    <div class="card">
+      <div class="card-title">Export Backup</div>
+      <p class="f12 muted mb14">Download all data as JSON for transfer to another computer.</p>
+      <button class="btn btn-p" onclick="exportBackup()">💾 Export JSON Backup</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Import Backup</div>
+      <p class="f12 muted mb14">Restore all data from a previously exported JSON backup file.</p>
+      <label class="flbl" for="f-backup">📂 Import JSON Backup</label>
+      <input type="file" id="f-backup" accept=".json" onchange="importBackup(this)">
+      <div id="bk-st" class="mt10 f11 muted"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ SETTINGS ════════ -->
+<div id="pane-settings" class="pane">
+  <div class="col2 mb20">
+    <!-- Branding -->
+    <div class="card">
+      <div class="card-title">Dashboard Branding</div>
+      <div class="fg mb14"><label>Dashboard Title</label><input id="cfg-title" placeholder="Dashboard Title"></div>
+      <div class="fg mb14"><label>Company Name</label><input id="cfg-company" placeholder="Company Name"></div>
+      <div class="fg mb14">
+        <label>Company Logo</label>
+        <label class="flbl" for="f-logo" style="margin-top:6px;display:inline-block">📷 Upload Logo</label>
+        <input type="file" id="f-logo" accept="image/*" onchange="uploadLogo(this)">
+        <div id="logo-prev" style="margin-top:8px"></div>
+      </div>
+      <div class="fg mb14">
+        <label>Background Color</label>
+        <!-- Color palette like MS Paint -->
+        <div style="font-size:10px;color:var(--txt3);margin-bottom:6px;margin-top:4px">Pick from palette or use custom picker:</div>
+        <div class="color-palette" id="color-palette"></div>
+        <div class="flex gap8 ai-c mt10">
+          <input type="color" id="cfg-color" value="#f0f4f9" style="width:48px;height:36px;padding:2px;border-radius:var(--rr);border:1.5px solid var(--border);cursor:pointer">
+          <span class="f11 muted">Custom color</span>
+          <div id="color-preview" style="width:60px;height:28px;border-radius:var(--rr);border:1px solid var(--border);transition:background .3s"></div>
+        </div>
+      </div>
+      <button class="btn btn-p" onclick="saveSettings()">💾 Save Branding</button>
+    </div>
+    <!-- Supervisors -->
+    <div class="card">
+      <div class="card-title">Supervisors</div>
+      <div id="sup-settings-list"></div>
+      <button class="btn btn-p btn-sm mt10" onclick="openSupMo(-1)">+ Add Supervisor</button>
+    </div>
+  </div>
+  <!-- Departments -->
+  <div class="card mb20">
+    <div class="card-title">Alert Departments</div>
+    <p class="f12 muted mb14">Configure departments for the Issues module. Drag to reorder.</p>
+    <div id="dept-list"></div>
+    <div class="flex gap8 mt10 ai-c">
+      <input id="new-dept" placeholder="Department name" style="width:200px">
+      <button class="btn btn-p btn-sm" onclick="addDept()">+ Add Department</button>
+    </div>
+  </div>
+  <!-- User Accounts & Credentials — Admin only -->
+  <div class="card mb20" id="card-user-accounts" style="display:none">
+    <div class="card-title">User Accounts &amp; Credentials</div>
+    <div class="info-box" style="margin-bottom:14px">ℹ Manage all user accounts below. Only Admin accounts can access Settings. Credentials are stored in LocalStorage.</div>
+    <div id="users-list-dyn"></div>
+    <div style="margin-top:14px;padding:14px;background:var(--bg3);border-radius:var(--rr);border:1px solid var(--border)">
+      <p class="f11 fw6 mb14" style="color:var(--txt)">Add / Edit User</p>
+      <input type="hidden" id="ue-orig">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end">
+        <div class="fg"><label>Username</label><input id="ue-user" placeholder="e.g. john.doe" autocomplete="off"></div>
+        <div class="fg"><label>Password</label><input id="ue-pass" placeholder="Password" type="text" autocomplete="off"></div>
+        <div class="fg"><label>Permission Level</label>
+          <select id="ue-role">
+            <option value="admin">👑 Admin — Full access</option>
+            <option value="supervisor">👷 Supervisor — Write access (no settings/delete)</option>
+            <option value="viewer">👁 Viewer — Read-only</option>
+          </select>
+        </div>
+        <button class="btn btn-p" onclick="saveUser()" style="height:38px">💾 Save</button>
+      </div>
+      <button class="btn btn-s btn-xs" onclick="clearUserForm()" style="margin-top:8px">✕ Clear</button>
+    </div>
+    <div style="margin-top:12px;padding:10px 14px;background:var(--yellow-lt);border:1px solid #fde68a;border-radius:var(--rr);font-size:11px;color:var(--yellow)">
+      ⚠ <strong>Security Note:</strong> Keep this page confidential. Always maintain at least one Admin account.
+    </div>
+  </div>
+  <!-- Vehicle Types -->
+  <div class="card mb20">
+    <div class="card-title">Vehicle Types</div>
+    <p class="f12 muted mb14">Manage the vehicle type dropdown used in Job Orders.</p>
+    <div id="vt-list"></div>
+    <div class="flex gap8 mt10 ai-c">
+      <input id="new-vt" placeholder="New vehicle type name" style="width:220px">
+      <button class="btn btn-p btn-sm" onclick="addVehicleTypeFromSettings()">+ Add Type</button>
+    </div>
+  </div>
+
+  <!-- Historical Man-Hour / Attendance Upload (Admin only) -->
+  <div class="card">
+    <div class="card-title">📂 Historical Data Entry (Pre-Dashboard Records)</div>
+    <div class="info-box mb14">Since production started before this dashboard was introduced, use this section to upload or manually enter previously recorded man-hours and attendance. This data will be merged with all daily entries and reflected in Man-Hour tracking.</div>
+    <div class="col2">
+      <div>
+        <p class="f12 fw6 mb14" style="color:var(--txt)">Option A — Upload Excel File</p>
+        <div class="ihint" style="text-align:left;margin-bottom:10px"><strong>Columns:</strong> Serial (Job SN) · Date · Supervisor · Employee Name · Stage · Attendance · Overtime Hrs</div>
+        <label class="flbl" for="f-hist-upload">📂 Upload Historical Excel</label>
+        <input type="file" id="f-hist-upload" accept=".xlsx,.xls,.csv" onchange="importHistoricalData(this)">
+        <div id="hist-upload-st" class="mt10 f11 muted"></div>
+        <button class="btn btn-b btn-sm mt10" onclick="dlHistTemplate()">⬇ Download Template</button>
+      </div>
+      <div>
+        <p class="f12 fw6 mb14" style="color:var(--txt)">Option B — Manual Entry</p>
+        <div class="fgrid" style="grid-template-columns:1fr 1fr">
+          <div class="fg"><label>Date</label><input type="date" id="hist-date"></div>
+          <div class="fg"><label>Supervisor</label><select id="hist-sup"><option value="">— Select —</option></select></div>
+          <div class="fg"><label>Job (Serial No.)</label><select id="hist-sn"><option value="">— Select —</option></select></div>
+          <div class="fg"><label>Stage</label>
+            <select id="hist-stage">
+              <option value="">— Select —</option>
+              <option>Preparation</option><option>Fabrication</option><option>Assembly</option>
+              <option>Welding</option><option>Painting</option><option>Finishing</option>
+            </select>
+          </div>
+          <div class="fg"><label>Employee</label><select id="hist-emp"><option value="">— Select —</option></select></div>
+          <div class="fg"><label>Attendance</label>
+            <select id="hist-att"><option value="Present">Present (8 hrs)</option><option value="Absent">Absent</option></select>
+          </div>
+          <div class="fg"><label>Overtime Hrs</label><input type="number" id="hist-ot" min="0" max="4" step=".5" placeholder="0"></div>
+        </div>
+        <button class="btn btn-p btn-sm" onclick="addHistEntry()">+ Add Historical Entry</button>
+        <div id="hist-manual-st" class="mt10 f11 muted"></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <p class="f11 fw6 mb14" style="color:var(--txt)">Existing Historical Entries (<span id="hist-count">0</span> records)</p>
+    <div class="tw" style="max-height:240px;overflow-y:auto"><table><thead><tr>
+      <th>Date</th><th>Serial</th><th>Supervisor</th><th>Employee</th><th>Stage</th><th>Att.</th><th>Base</th><th>OT</th><th>Total</th><th>Del</th>
+    </tr></thead><tbody id="hist-records-tb"></tbody></table></div>
+  </div>
+</div>
+
+</div><!-- /main -->
+<div class="tc" id="tc"></div>
+
+<!-- ════════ MODALS ════════ -->
+
+<!-- Job Order Modal -->
+<div class="mo" id="mo-job">
+<div class="md">
+  <div class="md-title"><span id="job-mo-t">Add Job Order</span><button class="md-close" onclick="closeMo('mo-job')">✕</button></div>
+  <input type="hidden" id="j-idx">
+  <div class="fgrid" style="grid-template-columns:1fr 1fr">
+    <div class="fg"><label>Serial Number</label><input id="j-sn" placeholder="001"></div>
+    <div class="fg"><label>Work Order No.</label><input id="j-wo" placeholder="WO-101"></div>
+    <div class="fg"><label>Customer</label><input id="j-cust" placeholder="Customer Name"></div>
+    <div class="fg"><label>Vehicle Type</label>
+      <div class="flex gap8 ai-c">
+        <select id="j-type" style="flex:1"></select>
+        <button type="button" class="btn btn-s btn-xs" onclick="addVehicleType()" title="Add new type">+</button>
+      </div>
+    </div>
+    <div class="fg"><label>Delivery Date</label><input type="date" id="j-del"></div>
+    <div class="fg"><label>Estimated Man Hours</label><input type="number" id="j-mh" min="0" placeholder="400"></div>
+    <div class="fg"><label>Supervisor</label><select id="j-sup"></select></div>
+    <div class="fg"><label>Status</label>
+      <select id="j-stat"><option>In Progress</option><option>Completed</option><option>On Hold</option></select>
+    </div>
+  </div>
+  <div class="flex gap8 mt14">
+    <button class="btn btn-p" onclick="saveJob()">Save</button>
+    <button class="btn btn-s" onclick="closeMo('mo-job')">Cancel</button>
+  </div>
+</div>
+</div>
+
+<!-- Allocation Modal (Status/Completion) -->
+<div class="mo" id="mo-status">
+<div class="md">
+  <div class="md-title">Update Work Order Status<button class="md-close" onclick="closeMo('mo-status')">✕</button></div>
+  <input type="hidden" id="st-wo-idx">
+  <div class="fg mb14"><label>Status</label>
+    <select id="st-stat"><option>In Progress</option><option>Completed</option><option>On Hold</option></select>
+  </div>
+  <div class="flex gap8">
+    <button class="btn btn-p" onclick="saveStatus()">Save</button>
+    <button class="btn btn-s" onclick="closeMo('mo-status')">Cancel</button>
+  </div>
+</div>
+</div>
+
+<!-- Supervisor Modal -->
+<div class="mo" id="mo-sup">
+<div class="md">
+  <div class="md-title"><span id="sup-mo-t">Add Supervisor</span><button class="md-close" onclick="closeMo('mo-sup')">✕</button></div>
+  <input type="hidden" id="sup-idx">
+  <div class="fgrid" style="grid-template-columns:1fr 1fr">
+    <div class="fg"><label>Supervisor Name</label><input id="sup-name" placeholder="e.g. Ahmed Hassan"></div>
+    <div class="fg"><label>Role / Title</label><input id="sup-role" placeholder="Production Supervisor"></div>
+  </div>
+  <div class="fg mb14">
+    <label>Photo</label>
+    <label class="flbl" for="f-sup-ph" style="margin-top:6px;display:inline-block">📷 Upload Photo</label>
+    <input type="file" id="f-sup-ph" accept="image/*" onchange="prevSupPh(this)">
+    <div id="sup-ph-prev" style="margin-top:8px;text-align:center"></div>
+  </div>
+  <div class="flex gap8">
+    <button class="btn btn-p" onclick="saveSup()">Save</button>
+    <button class="btn btn-s" onclick="closeMo('mo-sup')">Cancel</button>
+  </div>
+</div>
+</div>
+
+<!-- Employee Modal -->
+<div class="mo" id="mo-emp">
+<div class="md">
+  <div class="md-title"><span id="emp-mo-t">Add Employee</span><button class="md-close" onclick="closeMo('mo-emp')">✕</button></div>
+  <input type="hidden" id="emp-idx">
+  <div class="fgrid" style="grid-template-columns:1fr 1fr">
+    <div class="fg"><label>Employee ID</label><input id="emp-id" placeholder="EMP-001"></div>
+    <div class="fg"><label>Full Name</label><input id="emp-name" placeholder="Full Name"></div>
+    <div class="fg"><label>Department</label><input id="emp-dept" placeholder="Fabrication"></div>
+    <div class="fg"><label>Supervisor</label><select id="emp-sup"></select></div>
+    <div class="fg"><label>Designation</label>
+      <select id="emp-desig"><option>Welder</option><option>Fabricator</option><option>Helper</option><option>Painter</option><option>QC Inspector</option><option>Fitter</option><option>Assembler</option><option>Other</option></select>
+    </div>
+  </div>
+  <div class="flex gap8 mt14">
+    <button class="btn btn-p" onclick="saveEmp()">Save</button>
+    <button class="btn btn-s" onclick="closeMo('mo-emp')">Cancel</button>
+  </div>
+</div>
+</div>
+
+<!-- Entry Edit Modal -->
+<div class="mo" id="mo-entry">
+<div class="md">
+  <div class="md-title">Edit Entry<button class="md-close" onclick="closeMo('mo-entry')">✕</button></div>
+  <input type="hidden" id="ee-idx">
+  <div class="fgrid" style="grid-template-columns:1fr 1fr">
+    <div class="fg"><label>Date</label><input type="date" id="ee-date"></div>
+    <div class="fg"><label>Supervisor</label><select id="ee-sup"></select></div>
+    <div class="fg"><label>Work Order</label><select id="ee-wo"></select></div>
+    <div class="fg"><label>Stage</label>
+      <select id="ee-stage"><option>Preparation</option><option>Fabrication</option><option>Assembly</option><option>Welding</option><option>Painting</option><option>Finishing</option></select>
+    </div>
+    <div class="fg"><label>Employee</label><select id="ee-emp"></select></div>
+    <div class="fg"><label>Attendance</label>
+      <select id="ee-att"><option value="Present">Present (8 hrs)</option><option value="Absent">Absent (0 hrs)</option></select>
+    </div>
+    <div class="fg"><label>Overtime Hrs</label><input type="number" id="ee-ot" min="0" max="8" step=".5"></div>
+  </div>
+  <div class="flex gap8 mt14">
+    <button class="btn btn-p" onclick="saveEditEntry()">Update</button>
+    <button class="btn btn-s" onclick="closeMo('mo-entry')">Cancel</button>
+  </div>
+</div>
+</div>
+
+<!-- Remarks Modal -->
+<div class="mo" id="mo-rm">
+<div class="md">
+  <div class="md-title">Update Issue<button class="md-close" onclick="closeMo('mo-rm')">✕</button></div>
+  <input type="hidden" id="rm-idx">
+  <div class="fg mb14"><label>Status</label><select id="rm-stat"><option>Open</option><option>In Progress</option><option>Resolved</option></select></div>
+  <div class="fg mb14"><label>Remarks</label><textarea id="rm-text" placeholder="Add remarks…"></textarea></div>
+  <div class="flex gap8">
+    <button class="btn btn-p" onclick="saveRemarks()">Update</button>
+    <button class="btn btn-s" onclick="closeMo('mo-rm')">Cancel</button>
+  </div>
+</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+//  CONSTANTS & STATE
+// ═══════════════════════════════════════════
+const STAGES=['Preparation','Fabrication','Assembly','Welding','Painting','Finishing'];
+const SUP_COLORS=['#1a56db','#16a34a','#7c3aed','#ea580c','#0891b2','#db2777'];
+
+// Users are stored in S.cfg.users — loaded from LocalStorage
+// Default users provided if none exist
+const DEFAULT_USERS=[
+  {username:'admin',    pass:'admin123', role:'admin'},
+  {username:'supervisor',pass:'sup123',  role:'supervisor'},
+  {username:'viewer',   pass:'view123',  role:'viewer'}
+];
+
+// Runtime user lookup (populated from S.cfg.users after load)
+let USERS_MAP={};
+function rebuildUsersMap(){
+  USERS_MAP={};
+  (S.cfg.users||DEFAULT_USERS).forEach(u=>{ USERS_MAP[u.username.toLowerCase()]=u; });
+}
+
+const PALETTE_COLORS=[
+  '#ffffff','#f0f4f9','#e8eef7','#dbeafe','#bfdbfe','#93c5fd',
+  '#eff6ff','#f0fdf4','#dcfce7','#fef9c3','#fff7ed','#fef2f2',
+  '#f5f3ff','#fdf4ff','#ecfeff','#f8fafc','#e2e8f0','#cbd5e1',
+  '#1e429f','#1a56db','#3f83f8','#16a34a','#d97706','#dc2626',
+  '#7c3aed','#0891b2','#db2777','#475569','#1e293b','#0f172a'
+];
+
+let S={
+  jobs:[], manpower:[], entries:[], issues:[], mhAlerts:[],
+  supervisors:[],
+  departments:['QC','Purchase','Sales'],
+  cfg:{title:'Gorica Arabia Production Management Dashboard',company:'Gorica Arabia Limited',logo:null,bgColor:'#f0f4f9'}
+};
+
+let charts={}, curUser=null, curRole=null, supPhB64=null, logoPh=null, selRole_val='admin';
+
+function save(){ localStorage.setItem('gorica_v5', JSON.stringify(S)); }
+function load(){
+  const d=localStorage.getItem('gorica_v5');
+  if(d){ try{ S=JSON.parse(d); }catch(e){} }
+  if(!S.supervisors||!S.supervisors.length) S.supervisors=[
+    {name:'Ahmed Hassan',role:'Production Supervisor',photo:null},
+    {name:'Mohamed Ali',role:'Production Supervisor',photo:null},
+    {name:'Khalid Al-Harbi',role:'Production Supervisor',photo:null}
+  ];
+  if(!S.departments) S.departments=['QC','Purchase','Sales'];
+  if(!S.mhAlerts) S.mhAlerts=[];
+  if(!S.cfg) S.cfg={title:'Gorica Arabia Production Management Dashboard',company:'Gorica Arabia Limited',logo:null,bgColor:'#f0f4f9',vehicleTypes:['Truck Trailer','Tanker','Tipper','Car Carrier','Waste Bin Carrier']};
+  if(!S.cfg.bgColor) S.cfg.bgColor='#f0f4f9';
+  if(!S.cfg.vehicleTypes||!S.cfg.vehicleTypes.length) S.cfg.vehicleTypes=['Truck Trailer','Tanker','Tipper','Car Carrier','Waste Bin Carrier'];
+  // Initialize users if not present
+  if(!S.cfg.users||!S.cfg.users.length) S.cfg.users=[...DEFAULT_USERS];
+  rebuildUsersMap();
+}
+
+// ═══════════════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════════════
+function selRole(r, el){
+  selRole_val=r;
+  document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+}
+
+function doLogin(){
+  const u=document.getElementById('login-user').value.trim().toLowerCase();
+  const p=document.getElementById('login-pass').value;
+  const err=document.getElementById('login-err');
+  const userObj=USERS_MAP[u];
+  if(!userObj||userObj.pass!==p){ err.style.display='block'; return; }
+  err.style.display='none';
+  curUser=u; curRole=userObj.role;
+  document.getElementById('login-screen').style.display='none';
+  const roleLabels={admin:'Admin',supervisor:'Supervisor',viewer:'Viewer'};
+  document.getElementById('role-badge').textContent=roleLabels[curRole]||curRole;
+  applyRoleRestrictions();
+  refreshAll();
+}
+
+function doLogout(){
+  curUser=null; curRole=null;
+  document.getElementById('login-user').value='';
+  document.getElementById('login-pass').value='';
+  document.getElementById('login-screen').style.display='flex';
+}
+
+function applyRoleRestrictions(){
+  const isAdmin=curRole==='admin';
+  const isViewer=curRole==='viewer';
+  // Settings tab — Admin only
+  document.querySelector('[data-tab="settings"]').classList.toggle('hidden',!isAdmin);
+  // Import tab — hidden from viewers
+  document.querySelector('[data-tab="import"]').classList.toggle('hidden',isViewer);
+  // Add buttons — hidden from viewers
+  ['btn-add-job'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=isViewer?'none':'';});
+  // User Accounts card — Admin only (double-lock: tab is already hidden for non-admins,
+  // but this ensures the card is never rendered for anyone who somehow reaches the tab)
+  const uaCard=document.getElementById('card-user-accounts');
+  if(uaCard) uaCard.style.display=isAdmin?'':'none';
+}
+
+// ═══════════════════════════════════════════
+//  CLOCK & UTILS
+// ═══════════════════════════════════════════
+function tick(){
+  const n=new Date();
+  document.getElementById('clock').textContent=n.toLocaleTimeString('en-US',{hour12:false});
+  document.getElementById('dateline').textContent=n.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+}
+function today(){ return new Date().toISOString().split('T')[0]; }
+
+function gTab(name,el){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('pane-'+name).classList.add('on');
+  if(el) el.classList.add('on');
+  refreshAll();
+}
+function openMo(id){ document.getElementById(id).classList.add('on'); }
+function closeMo(id){ document.getElementById(id).classList.remove('on'); }
+
+function toast(msg,type=''){
+  const t=document.createElement('div');
+  t.className='toast'+(type?' '+type:''); t.textContent=msg;
+  document.getElementById('tc').appendChild(t);
+  setTimeout(()=>t.remove(),3800);
+}
+
+function mkChart(id,cfg){
+  if(charts[id]){charts[id].destroy();delete charts[id];}
+  const cv=document.getElementById(id); if(!cv)return;
+  charts[id]=new Chart(cv.getContext('2d'),cfg);
+}
+
+// ═══════════════════════════════════════════
+//  SETTINGS & BRANDING
+// ═══════════════════════════════════════════
+function buildPalette(){
+  const el=document.getElementById('color-palette'); if(!el)return;
+  el.innerHTML=PALETTE_COLORS.map(c=>`<div class="cp-swatch" style="background:${c}" title="${c}" onclick="pickColor('${c}',this)"></div>`).join('');
+  const picker=document.getElementById('cfg-color');
+  if(picker){picker.value=S.cfg.bgColor||'#f0f4f9';picker.addEventListener('input',e=>previewColor(e.target.value));}
+  previewColor(S.cfg.bgColor||'#f0f4f9');
+}
+function pickColor(c,el){
+  document.querySelectorAll('.cp-swatch').forEach(s=>s.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('cfg-color').value=c;
+  previewColor(c);
+}
+function previewColor(c){
+  const pv=document.getElementById('color-preview'); if(pv) pv.style.background=c;
+}
+function applyBgColor(c){
+  document.documentElement.style.setProperty('--primary-bg', c||'#f0f4f9');
+  document.body.style.background=c||'#f0f4f9';
+}
+function applyBranding(){
+  const title=S.cfg.title||'Gorica Arabia Production Management Dashboard';
+  const company=S.cfg.company||'Gorica Arabia Limited';
+  document.getElementById('hdr-title').textContent=title;
+  document.getElementById('hdr-sub').textContent=company;
+  document.title=title;
+
+  // Header logo
+  const logoEl=document.getElementById('hdr-logo');
+  if(S.cfg.logo){logoEl.src=S.cfg.logo;logoEl.style.display='';}
+  else logoEl.style.display='none';
+
+  // Login screen logo
+  const loginLogoImg=document.getElementById('login-logo-img');
+  const loginLogoFallback=document.getElementById('login-logo-fallback');
+  const loginTitleEl=document.getElementById('login-title-txt');
+  const loginSubEl=document.getElementById('login-sub-txt');
+  if(loginTitleEl) loginTitleEl.textContent=company;
+  if(loginSubEl) loginSubEl.textContent=title;
+  if(S.cfg.logo){
+    if(loginLogoImg){loginLogoImg.src=S.cfg.logo;loginLogoImg.style.display='';}
+    if(loginLogoFallback)loginLogoFallback.style.display='none';
+  } else {
+    if(loginLogoImg)loginLogoImg.style.display='none';
+    if(loginLogoFallback)loginLogoFallback.style.display='';
+  }
+
+  applyBgColor(S.cfg.bgColor);
+
+  // Fill settings form
+  const tf=document.getElementById('cfg-title'); if(tf)tf.value=title;
+  const cf=document.getElementById('cfg-company'); if(cf)cf.value=company;
+  const lp=document.getElementById('logo-prev'); if(lp)lp.innerHTML=S.cfg.logo?`<img src="${S.cfg.logo}" style="height:36px;border-radius:6px">`:' ';
+  buildPalette();
+  renderVehicleTypes();
+}
+
+function uploadLogo(inp){
+  if(!inp.files||!inp.files[0])return;
+  const file=inp.files[0];
+  const r=new FileReader();
+  r.onload=function(ev){
+    logoPh=ev.target.result;
+    const lp=document.getElementById('logo-prev');
+    if(lp) lp.innerHTML=`<img src="${logoPh}" style="height:36px;border-radius:6px;margin-top:6px">`;
+    // Preview immediately on login screen too
+    const loginLogoImg=document.getElementById('login-logo-img');
+    const loginLogoFallback=document.getElementById('login-logo-fallback');
+    if(loginLogoImg){loginLogoImg.src=logoPh;loginLogoImg.style.display='';}
+    if(loginLogoFallback)loginLogoFallback.style.display='none';
+    // Preview in header
+    const hdrLogo=document.getElementById('hdr-logo');
+    if(hdrLogo){hdrLogo.src=logoPh;hdrLogo.style.display='';}
+  };
+  r.readAsDataURL(file);
+}
+function saveSettings(){
+  S.cfg.title=document.getElementById('cfg-title').value.trim()||'Gorica Arabia Production Management Dashboard';
+  S.cfg.company=document.getElementById('cfg-company').value.trim()||'Gorica Arabia Limited';
+  S.cfg.bgColor=document.getElementById('cfg-color').value||'#f0f4f9';
+  if(logoPh) S.cfg.logo=logoPh;
+  save(); applyBranding(); toast('Settings saved ✅');
+}
+
+// ═══════════════════════════════════════════
+//  DEPARTMENTS
+// ═══════════════════════════════════════════
+function renderDepts(){
+  const el=document.getElementById('dept-list'); if(!el)return;
+  el.innerHTML=S.departments.map((d,i)=>`
+    <div class="dept-item" draggable="true" ondragstart="deptDrag(${i})" ondragover="event.preventDefault()" ondrop="deptDrop(${i})">
+      <span style="color:var(--txt3);cursor:grab;font-size:14px">⠿</span>
+      <span class="dept-name">${d}</span>
+      <button class="btn btn-s btn-xs" onclick="editDept(${i})">✏️</button>
+      <button class="btn btn-r btn-xs" onclick="delDept(${i})">🗑️</button>
+    </div>`).join('');
+  // dept select in issues form
+  const ds=document.getElementById('i-dept'); if(ds){
+    const cur=ds.value; ds.innerHTML='<option value="">— Select —</option>';
+    S.departments.forEach(d=>ds.innerHTML+=`<option value="${d}"${d===cur?' selected':''}>${d}</option>`);
+  }
+}
+let dragDeptIdx=null;
+function deptDrag(i){dragDeptIdx=i;}
+function deptDrop(i){
+  if(dragDeptIdx===null||dragDeptIdx===i)return;
+  const d=S.departments.splice(dragDeptIdx,1)[0]; S.departments.splice(i,0,d);
+  dragDeptIdx=null; save(); renderDepts();
+}
+function addDept(){
+  const v=document.getElementById('new-dept').value.trim(); if(!v)return;
+  if(S.departments.includes(v)){toast('Dept already exists','warn');return;}
+  S.departments.push(v); document.getElementById('new-dept').value='';
+  save(); renderDepts(); toast('Department added');
+}
+function editDept(i){
+  const n=prompt('Edit department name:',S.departments[i]); if(!n)return;
+  S.departments[i]=n.trim(); save(); renderDepts();
+}
+function delDept(i){
+  if(!confirm(`Delete department "${S.departments[i]}"?`))return;
+  S.departments.splice(i,1); save(); renderDepts();
+}
+
+// ═══════════════════════════════════════════
+//  SUPERVISORS SETTINGS
+// ═══════════════════════════════════════════
+function renderSupSettings(){
+  const el=document.getElementById('sup-settings-list'); if(!el)return;
+  el.innerHTML=S.supervisors.map((s,i)=>`
+    <div style="display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--bg3);border-radius:var(--rr);margin-bottom:7px;border:1px solid var(--border)">
+      <div style="width:34px;height:34px;border-radius:50%;background:${SUP_COLORS[i%SUP_COLORS.length]};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;overflow:hidden;flex-shrink:0">
+        ${s.photo?`<img src="${s.photo}" style="width:34px;height:34px;object-fit:cover">`:s.name[0]}
+      </div>
+      <div style="flex:1"><div class="f12 fw6" style="color:var(--txt)">${s.name}</div><div class="f10 muted">${s.role}</div></div>
+      <button class="btn btn-s btn-xs" onclick="openSupMo(${i})">✏️</button>
+      <button class="btn btn-r btn-xs" onclick="delSup(${i})">🗑️</button>
+    </div>`).join('');
+}
+
+// ─── VEHICLE TYPES ───
+function renderVehicleTypes(){
+  const el=document.getElementById('vt-list'); if(!el)return;
+  el.innerHTML=(S.cfg.vehicleTypes||[]).map((v,i)=>`
+    <div class="dept-item">
+      <span class="dept-name">${v}</span>
+      <button class="btn btn-r btn-xs" onclick="delVehicleType(${i})" ${S.cfg.vehicleTypes.length<=1?'disabled':''}>🗑️</button>
+    </div>`).join('');
+  // Update j-type dropdown in modal
+  const jtype=document.getElementById('j-type'); if(!jtype)return;
+  const cur=jtype.value;
+  jtype.innerHTML='';
+  (S.cfg.vehicleTypes||[]).forEach(v=>{
+    jtype.innerHTML+=`<option value="${v}"${v===cur?' selected':''}>${v}</option>`;
+  });
+}
+
+function addVehicleType(){
+  const name=prompt('Enter new vehicle type name:');
+  if(!name||!name.trim())return;
+  const trimmed=name.trim();
+  if(S.cfg.vehicleTypes.includes(trimmed)){toast('Vehicle type already exists','warn');return;}
+  S.cfg.vehicleTypes.push(trimmed);
+  save(); renderVehicleTypes(); toast('Vehicle type "'+trimmed+'" added');
+}
+
+function addVehicleTypeFromSettings(){
+  const inp=document.getElementById('new-vt'); if(!inp)return;
+  const val=inp.value.trim(); if(!val)return;
+  if(S.cfg.vehicleTypes.includes(val)){toast('Already exists','warn');return;}
+  S.cfg.vehicleTypes.push(val); inp.value='';
+  save(); renderVehicleTypes(); toast('Vehicle type added');
+}
+
+function delVehicleType(i){
+  if(S.cfg.vehicleTypes.length<=1){toast('Must keep at least one type','warn');return;}
+  if(!confirm('Delete "'+S.cfg.vehicleTypes[i]+'"?'))return;
+  S.cfg.vehicleTypes.splice(i,1);
+  save(); renderVehicleTypes();
+}
+
+function renderUsersSettings(){
+  // Only Admin may view or interact with user accounts
+  if(curRole!=='admin') return;
+  const el=document.getElementById('users-list-dyn'); if(!el)return;
+  const users=S.cfg.users||DEFAULT_USERS;
+  const roleInfo={
+    admin:{label:'Admin',badge:'bx-h',desc:'Full access — edit, delete, settings, export'},
+    supervisor:{label:'Supervisor',badge:'bx-m',desc:'Write access — daily entry, attendance, issues'},
+    viewer:{label:'Viewer',badge:'bx-l',desc:'Read-only — view dashboard, reports, charts'}
+  };
+  el.innerHTML=`<div class="tw"><table><thead><tr>
+    <th style="width:32px">#</th><th>Username</th><th>Password</th><th>Role</th><th>Permissions</th><th style="width:120px">Actions</th>
+  </tr></thead><tbody>
+  ${users.map((u,i)=>{
+    const ri=roleInfo[u.role]||{label:u.role,badge:'bx-l',desc:''};
+    const isCurrentUser=u.username.toLowerCase()===curUser;
+    return `<tr style="${isCurrentUser?'background:var(--blue-lt)':''}">
+      <td class="muted">${i+1}</td>
+      <td><strong>${u.username}</strong>${isCurrentUser?' <span class="bx bx-l" style="font-size:8px">You</span>':''}</td>
+      <td><span style="font-family:monospace;font-size:12px;background:var(--bg4);padding:2px 8px;border-radius:4px;letter-spacing:1px">${u.pass}</span></td>
+      <td><span class="bx ${ri.badge}">${ri.label}</span></td>
+      <td class="f11 muted">${ri.desc}</td>
+      <td style="white-space:nowrap">
+        ${i>0?`<button class="btn btn-s btn-xs" onclick="moveUser(${i},-1)" title="Move up">↑</button> `:''}
+        ${i<users.length-1?`<button class="btn btn-s btn-xs" onclick="moveUser(${i},1)" title="Move down">↓</button> `:''}
+        <button class="btn btn-b btn-xs" onclick="editUser(${i})">✏️</button>
+        ${!isCurrentUser&&users.length>1?`<button class="btn btn-r btn-xs" onclick="deleteUser(${i})">🗑️</button>`:''}
+      </td>
+    </tr>`;
+  }).join('')}
+  </tbody></table></div>`;
+}
+
+function saveUser(){
+  if(curRole!=='admin'){toast('Access denied','err');return;}
+  const newUsername=document.getElementById('ue-user').value.trim().toLowerCase();
+  const pass=document.getElementById('ue-pass').value.trim();
+  const role=document.getElementById('ue-role').value;
+  if(!newUsername||!pass){toast('Username and password are required','err');return;}
+  if(!/^[a-z0-9._-]+$/.test(newUsername)){toast('Username: only letters, numbers, . _ - allowed','err');return;}
+  const users=S.cfg.users||DEFAULT_USERS;
+  // Check for duplicate (ignore self when editing)
+  const dupIdx=users.findIndex(u=>u.username.toLowerCase()===newUsername);
+  if(dupIdx>=0&&(!origUsername||users[dupIdx].username.toLowerCase()!==origUsername)){
+    toast(`Username "${newUsername}" already exists`,'err'); return;
+  }
+  if(origUsername){
+    // Editing existing
+    const idx=users.findIndex(u=>u.username.toLowerCase()===origUsername);
+    if(idx>=0){
+      // Prevent removing the last admin
+      if(users[idx].role==='admin'&&role!=='admin'){
+        const adminCount=users.filter(u=>u.role==='admin').length;
+        if(adminCount<=1){toast('Cannot remove the last Admin account','err');return;}
+      }
+      users[idx]={username:newUsername,pass,role};
+      // If editing own username, update curUser
+      if(origUsername===curUser) curUser=newUsername;
+    }
+    toast('User updated ✅');
+  } else {
+    users.push({username:newUsername,pass,role});
+    toast(`User "${newUsername}" created ✅`);
+  }
+  S.cfg.users=users;
+  save(); rebuildUsersMap();
+  clearUserForm();
+  renderUsersSettings();
+}
+
+function editUser(i){
+  const u=S.cfg.users[i];
+  document.getElementById('ue-orig').value=u.username;
+  document.getElementById('ue-user').value=u.username;
+  document.getElementById('ue-pass').value=u.pass;
+  document.getElementById('ue-role').value=u.role;
+}
+
+function deleteUser(i){
+  if(curRole!=='admin'){toast('Access denied','err');return;}
+  const users=S.cfg.users||[];
+  if(users.length<=1){toast('Cannot delete the only user account','err');return;}
+  const u=users[i];
+  // Prevent deleting last admin
+  if(u.role==='admin'&&users.filter(x=>x.role==='admin').length<=1){
+    toast('Cannot delete the last Admin account','err'); return;
+  }
+  if(!confirm(`Delete user "${u.username}"? This cannot be undone.`))return;
+  users.splice(i,1);
+  S.cfg.users=users; save(); rebuildUsersMap(); renderUsersSettings();
+  toast(`User "${u.username}" deleted`,'warn');
+}
+
+function moveUser(i,dir){
+  if(curRole!=='admin'){toast('Access denied','err');return;}
+  const users=S.cfg.users||[];
+  const j=i+dir;
+  if(j<0||j>=users.length)return;
+  [users[i],users[j]]=[users[j],users[i]];
+  S.cfg.users=users; save(); renderUsersSettings();
+}
+
+function clearUserForm(){
+  document.getElementById('ue-orig').value='';
+  document.getElementById('ue-user').value='';
+  document.getElementById('ue-pass').value='';
+  document.getElementById('ue-role').value='admin';
+}
+
+// ═══════════════════════════════════════════
+//  IMPORT — JOBS
+// ═══════════════════════════════════════════
+function importJobs(inp){
+  if(!inp||!inp.files||!inp.files[0]){toast('No file selected','err');return;}
+  const file=inp.files[0];
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      const data=new Uint8Array(ev.target.result);
+      const wb=XLSX.read(data,{type:'array',cellDates:true});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      // Use raw:true so we get numbers as numbers and dates as Date objects
+      const aoa=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:true});
+      if(!aoa||aoa.length<2){toast('No data rows found in file','err');return;}
+
+      let added=0,skipped=0,dupSN=0;
+
+      for(let i=1;i<aoa.length;i++){
+        const row=aoa[i];
+        // Skip completely empty rows
+        const anyVal=row.some(c=>c!==null&&c!==undefined&&c!=='');
+        if(!anyVal){skipped++;continue;}
+
+        // Serial Number — col 0 — required and must be unique
+        const sn=String(row[0]||'').trim();
+        if(!sn){skipped++;continue;}
+
+        // Check for duplicate serial number
+        if(S.jobs.find(j=>j.sn===sn)){dupSN++;skipped++;continue;}
+
+        // Work Order — col 1 — may be 'N/A', numeric, or string
+        let wo=String(row[1]||'').trim();
+        if(!wo||wo.toLowerCase()==='n/a'||wo===''){
+          wo='N/A'; // accept N/A, store as-is
+        } else {
+          // Could be a number like 602000200 — keep as string
+          wo=String(row[1]).trim();
+        }
+
+        // Customer — col 2
+        const customer=String(row[2]||'').trim()||'N/A';
+
+        // Vehicle Type — col 3
+        const vtype=String(row[3]||'').trim()||'Other';
+        // Auto-add new vehicle types to the dropdown list
+        if(!S.cfg.vehicleTypes.includes(vtype)){
+          S.cfg.vehicleTypes.push(vtype);
+        }
+
+        // Delivery Date — col 4 — may be a JS Date object, string 'N/A', or serial number
+        let delivery='N/A';
+        const rawDel=row[4];
+        if(rawDel instanceof Date){
+          // SheetJS parsed it as a real Date
+          const y=rawDel.getFullYear();
+          const m=String(rawDel.getMonth()+1).padStart(2,'0');
+          const d=String(rawDel.getDate()).padStart(2,'0');
+          delivery=`${y}-${m}-${d}`;
+        } else if(rawDel&&String(rawDel).trim().toLowerCase()!=='n/a'&&String(rawDel).trim()!==''){
+          delivery=fmtDate(rawDel);
+        }
+
+        // Estimated Man Hours — col 5 — may be 'N/A' or a number
+        let estMH=0;
+        const rawMH=row[5];
+        if(rawMH!==null&&rawMH!==undefined&&rawMH!==''&&String(rawMH).toLowerCase()!=='n/a'){
+          estMH=parseFloat(rawMH)||0;
+        }
+
+        // Supervisor — col 6
+        const supervisor=String(row[6]||'').trim();
+        const supClean=(supervisor.toLowerCase()==='empty'||supervisor.toLowerCase()==='n/a'||!supervisor)?'':supervisor;
+
+        S.jobs.push({
+          sn, wo, customer, type:vtype,
+          delivery, estMH,
+          supervisor:supClean,
+          status:'In Progress'
+        });
+        added++;
+      }
+
+      save();
+      const stEl=document.getElementById('st-jobs');
+      let msg=`✅ Imported ${added} job orders`;
+      if(skipped>0) msg+=` (${skipped} skipped`;
+      if(dupSN>0) msg+=`, ${dupSN} duplicate serial numbers`;
+      if(skipped>0) msg+=')';
+      if(stEl) stEl.textContent=msg;
+      if(stEl) stEl.style.color=added>0?'var(--green)':'var(--red)';
+      toast(added>0?`✅ Imported ${added} job orders`:`⚠ No rows imported — check file format`);
+      refreshAll();
+    }catch(err){
+      toast('Import error: '+err.message,'err');
+      console.error('importJobs error',err);
+    }
+  };
+  reader.onerror=function(){toast('Failed to read file','err');};
+  reader.readAsArrayBuffer(file);
+  inp.value='';
+}
+
+function importManpower(inp){
+  if(!inp||!inp.files||!inp.files[0]){toast('No file selected','err');return;}
+  const file=inp.files[0];
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      const data=new Uint8Array(ev.target.result);
+      const wb=XLSX.read(data,{type:'array'});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const aoa=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:false});
+      if(!aoa||aoa.length<2){toast('No data rows found in file','err');return;}
+      let added=0,skipped=0;
+      for(let i=1;i<aoa.length;i++){
+        const row=aoa[i];
+        const id=String(row[0]||'').trim();
+        const name=String(row[1]||'').trim();
+        if(!id||!name){skipped++;continue;}
+        if(S.manpower.find(m=>m.id===id)){skipped++;continue;}
+        S.manpower.push({
+          id, name,
+          dept:String(row[2]||'').trim(),
+          sup:String(row[3]||'').trim(),
+          desig:String(row[4]||'').trim()
+        });
+        added++;
+      }
+      save();
+      const stEl=document.getElementById('st-mp');
+      if(stEl) stEl.textContent='✅ Imported '+added+' employees ('+skipped+' skipped)';
+      toast('Imported '+added+' employees');
+      refreshAll();
+    }catch(err){
+      toast('Import error: '+err.message,'err');
+      console.error('importManpower error',err);
+    }
+  };
+  reader.onerror=function(){toast('Failed to read file','err');};
+  reader.readAsArrayBuffer(file);
+  inp.value='';
+}
+
+function fmtDate(v){
+  if(!v) return '';
+  const s=String(v).trim();
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  const d=new Date(s);
+  if(!isNaN(d.getTime())) return d.toISOString().split('T')[0];
+  return s;
+}
+
+// ─── Template download ───
+function dlTemplate(type){
+  const {utils,write}=XLSX;
+  let wb,ws,data;
+  if(type==='jobs'){
+    data=[['Serial Number','Work Order','Customer','Vehicle Type','Delivery Date','Estimated Man Hours','Supervisor'],
+      ['001','WO-101','Sample Customer','Truck Trailer','2026-06-30','400','Ahmed Hassan']];
+  } else {
+    data=[['Employee ID','Employee Name','Department','Supervisor','Designation'],
+      ['EMP-001','Sample Employee','Fabrication','Ahmed Hassan','Welder']];
+  }
+  ws=utils.aoa_to_sheet(data);
+  wb=utils.book_new(); utils.book_append_sheet(wb,ws,'Template');
+  const fn=type==='jobs'?'JobOrders_Template.xlsx':'Manpower_Template.xlsx';
+  const out=write(wb,{bookType:'xlsx',type:'binary'});
+  const buf=new ArrayBuffer(out.length);
+  const view=new Uint8Array(buf);
+  for(let i=0;i<out.length;i++) view[i]=out.charCodeAt(i)&0xff;
+  const blob=new Blob([buf],{type:'application/octet-stream'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=fn; a.click();
+  toast('Template downloaded');
+}
+
+// ═══════════════════════════════════════════
+//  SAMPLE DATA
+// ═══════════════════════════════════════════
+function loadSample(){
+  S.supervisors=[
+    {name:'Ahmed Hassan',role:'Production Supervisor',photo:null},
+    {name:'Mohamed Ali',role:'Production Supervisor',photo:null},
+    {name:'Khalid Al-Harbi',role:'Production Supervisor',photo:null}
+  ];
+  S.jobs=[
+    {sn:'001',wo:'WO-101',customer:'Al Futtaim Logistics',type:'Truck Trailer',delivery:'2026-04-15',estMH:480,supervisor:'Ahmed Hassan',status:'In Progress'},
+    {sn:'002',wo:'WO-102',customer:'ADNOC Distribution',type:'Tanker',delivery:'2026-04-20',estMH:360,supervisor:'Mohamed Ali',status:'In Progress'},
+    {sn:'003',wo:'WO-103',customer:'Dubai Municipality',type:'Tipper',delivery:'2026-05-01',estMH:300,supervisor:'Khalid Al-Harbi',status:'In Progress'},
+    {sn:'004',wo:'WO-104',customer:'UAE Auto Group',type:'Car Carrier',delivery:'2026-04-08',estMH:200,supervisor:'Ahmed Hassan',status:'Completed'},
+    {sn:'005',wo:'WO-105',customer:"Bee'ah Waste",type:'Waste Bin Carrier',delivery:'2026-03-30',estMH:280,supervisor:'Mohamed Ali',status:'In Progress'},
+  ];
+  S.manpower=[
+    {id:'EMP-001',name:'Mohammed Al Rashidi',dept:'Fabrication',sup:'Ahmed Hassan',desig:'Welder'},
+    {id:'EMP-002',name:'Khalid Bin Saeed',dept:'Fabrication',sup:'Ahmed Hassan',desig:'Fabricator'},
+    {id:'EMP-003',name:'Sanjay Kumar',dept:'Assembly',sup:'Ahmed Hassan',desig:'Fitter'},
+    {id:'EMP-004',name:'Ramesh Patel',dept:'Painting',sup:'Mohamed Ali',desig:'Painter'},
+    {id:'EMP-005',name:'Ahmed Al Mansoori',dept:'Assembly',sup:'Mohamed Ali',desig:'Assembler'},
+    {id:'EMP-006',name:'Sultan Al Mazrouei',dept:'Welding',sup:'Mohamed Ali',desig:'Welder'},
+    {id:'EMP-007',name:'Vijay Nair',dept:'Fabrication',sup:'Khalid Al-Harbi',desig:'Fabricator'},
+    {id:'EMP-008',name:'Arjun Singh',dept:'Painting',sup:'Khalid Al-Harbi',desig:'Painter'},
+    {id:'EMP-009',name:'Hassan Al Blooshi',dept:'Assembly',sup:'Khalid Al-Harbi',desig:'Assembler'},
+  ];
+  const t=today();
+  S.entries=[
+    {date:t,sup:'Ahmed Hassan',wo:'WO-101',stage:'Fabrication',emp:'Mohammed Al Rashidi',att:'Present',baseHrs:8,ot:2},
+    {date:t,sup:'Ahmed Hassan',wo:'WO-101',stage:'Welding',emp:'Khalid Bin Saeed',att:'Present',baseHrs:8,ot:0},
+    {date:t,sup:'Ahmed Hassan',wo:'WO-102',stage:'Fabrication',emp:'Sanjay Kumar',att:'Present',baseHrs:8,ot:0},
+    {date:t,sup:'Mohamed Ali',wo:'WO-102',stage:'Painting',emp:'Ramesh Patel',att:'Present',baseHrs:8,ot:1},
+    {date:t,sup:'Mohamed Ali',wo:'WO-101',stage:'Assembly',emp:'Ahmed Al Mansoori',att:'Present',baseHrs:8,ot:0},
+    {date:t,sup:'Mohamed Ali',wo:'WO-103',stage:'Welding',emp:'Sultan Al Mazrouei',att:'Absent',baseHrs:0,ot:0},
+    {date:t,sup:'Khalid Al-Harbi',wo:'WO-103',stage:'Fabrication',emp:'Vijay Nair',att:'Present',baseHrs:8,ot:0},
+    {date:t,sup:'Khalid Al-Harbi',wo:'WO-105',stage:'Finishing',emp:'Arjun Singh',att:'Present',baseHrs:8,ot:3},
+    {date:t,sup:'Khalid Al-Harbi',wo:'WO-105',stage:'Assembly',emp:'Hassan Al Blooshi',att:'Present',baseHrs:8,ot:0},
+    {date:'2026-03-20',sup:'Ahmed Hassan',wo:'WO-102',stage:'Fabrication',emp:'Mohammed Al Rashidi',att:'Present',baseHrs:8,ot:0},
+    {date:'2026-03-20',sup:'Ahmed Hassan',wo:'WO-102',stage:'Welding',emp:'Khalid Bin Saeed',att:'Present',baseHrs:8,ot:0},
+    {date:'2026-03-21',sup:'Mohamed Ali',wo:'WO-104',stage:'Preparation',emp:'Ramesh Patel',att:'Present',baseHrs:8,ot:2},
+    {date:'2026-03-21',sup:'Mohamed Ali',wo:'WO-104',stage:'Fabrication',emp:'Ahmed Al Mansoori',att:'Present',baseHrs:8,ot:0},
+    {date:'2026-03-22',sup:'Khalid Al-Harbi',wo:'WO-104',stage:'Painting',emp:'Vijay Nair',att:'Present',baseHrs:8,ot:0},
+    {date:'2026-03-22',sup:'Khalid Al-Harbi',wo:'WO-104',stage:'Finishing',emp:'Arjun Singh',att:'Present',baseHrs:8,ot:0},
+    {date:'2026-03-23',sup:'Ahmed Hassan',wo:'WO-105',stage:'Preparation',emp:'Mohammed Al Rashidi',att:'Present',baseHrs:8,ot:2},
+    {date:'2026-03-24',sup:'Mohamed Ali',wo:'WO-105',stage:'Fabrication',emp:'Ramesh Patel',att:'Present',baseHrs:8,ot:0},
+    {date:'2026-03-25',sup:'Khalid Al-Harbi',wo:'WO-105',stage:'Welding',emp:'Vijay Nair',att:'Present',baseHrs:8,ot:0},
+    {date:'2026-03-25',sup:'Ahmed Hassan',wo:'WO-105',stage:'Painting',emp:'Mohammed Al Rashidi',att:'Present',baseHrs:8,ot:2},
+  ];
+  S.issues=[
+    {id:'ISS-001',date:'2026-03-24',wo:'WO-105',dept:'QC',desc:'Paint imperfection on unit — needs re-inspection before delivery.',priority:'High',by:'Ahmed Hassan',status:'Open',remarks:''},
+    {id:'ISS-002',date:'2026-03-23',wo:'WO-102',dept:'Purchase',desc:'Steel plates delayed — 3 days behind schedule.',priority:'High',by:'Production Engineer',status:'In Progress',remarks:'Supplier confirmed shipment'},
+    {id:'ISS-003',date:'2026-03-22',wo:'WO-104',dept:'Sales',desc:'Customer needs confirmation on rack height specification.',priority:'Medium',by:'Mohamed Ali',status:'Open',remarks:''},
+  ];
+  S.mhAlerts=[];
+  // Preserve branding settings when loading sample
+  if(!S.cfg) S.cfg={title:'Gorica Arabia Production Management Dashboard',company:'Gorica Arabia Limited',logo:null,bgColor:'#f0f4f9',vehicleTypes:['Truck Trailer','Tanker','Tipper','Car Carrier','Waste Bin Carrier']};
+  if(!S.cfg.vehicleTypes||!S.cfg.vehicleTypes.length) S.cfg.vehicleTypes=['Truck Trailer','Tanker','Tipper','Car Carrier','Waste Bin Carrier'];
+  save(); toast('✅ Sample data loaded!'); refreshAll();
+}
+
+function clearAll(){
+  if(!confirm('Clear ALL data?'))return;
+  const vt=(S.cfg&&S.cfg.vehicleTypes)?S.cfg.vehicleTypes:['Truck Trailer','Tanker','Tipper','Car Carrier','Waste Bin Carrier'];
+  const logo=(S.cfg&&S.cfg.logo)||null;
+  const curTitle=(S.cfg&&S.cfg.title)||'Gorica Arabia Production Management Dashboard';
+  const curCompany=(S.cfg&&S.cfg.company)||'Gorica Arabia Limited';
+  S={jobs:[],manpower:[],entries:[],issues:[],mhAlerts:[],
+     supervisors:[{name:'Ahmed Hassan',role:'Production Supervisor',photo:null},{name:'Mohamed Ali',role:'Production Supervisor',photo:null},{name:'Khalid Al-Harbi',role:'Production Supervisor',photo:null}],
+     departments:['QC','Purchase','Sales'],
+     cfg:{title:curTitle,company:curCompany,logo:logo,bgColor:'#f0f4f9',vehicleTypes:vt}};
+  save(); toast('Data cleared','warn'); refreshAll();
+}
+
+// ═══════════════════════════════════════════
+//  MAN-HOUR UTILS
+// ═══════════════════════════════════════════
+// Use serial number (sn) as the unique key for job linkage since WO can be N/A or duplicated
+function actualHrs(sn){ return S.entries.filter(e=>e.sn===sn).reduce((a,e)=>a+eTotalHrs(e),0); }
+function eTotalHrs(e){ return e.att==='Present'?(e.baseHrs||8)+(e.ot||0):0; }
+
+function checkMHAlerts(){
+  const existing=new Set(S.mhAlerts.map(a=>a.key));
+  S.jobs.forEach(j=>{
+    if(!j.estMH) return;
+    const act=actualHrs(j.sn); const pct=act/j.estMH*100;
+    [80,90,100].forEach(th=>{
+      const key=`${j.sn}_${th}`;
+      if(pct>=th&&!existing.has(key)){
+        S.mhAlerts.push({key,sn:j.sn,wo:j.wo,th,pct:Math.round(pct),act,plan:j.estMH,date:today(),customer:j.customer});
+        existing.add(key);
+      }
+    });
+  });
+  save();
+  const hasMH=S.mhAlerts.length>0;
+  document.getElementById('mh-pill').style.display=hasMH?'':'none';
+  document.getElementById('nb').textContent=
+    (S.mhAlerts.length+S.issues.filter(i=>i.status!=='Resolved').length)||'';
+}
+
+// ═══════════════════════════════════════════
+//  DROPDOWNS
+// ═══════════════════════════════════════════
+function updateDropdowns(){
+  const supNames=S.supervisors.map(s=>s.name);
+
+  // Job selects — SN + Vehicle Type + WO — no designation clutter
+  // Format: #001 | Flatbed Semi-Trailer 38 TON (WO: 602000200)
+  const jobLabel=j=>{
+    const wo=j.wo&&j.wo!=='N/A'?`WO: ${j.wo}`:'No WO';
+    return `#${j.sn} | ${j.type} (${wo})`;
+  };
+  ['e-wo','i-wo','ee-wo','h-wo','hist-sn'].forEach(id=>{
+    const el=document.getElementById(id); if(!el)return;
+    const cur=el.value;
+    el.innerHTML=(id==='h-wo'||id==='hist-sn')?'<option value="">— Select —</option>':'<option value="">— Select job —</option>';
+    S.jobs.forEach(j=>{
+      el.innerHTML+=`<option value="${j.sn}"${j.sn===cur?' selected':''}>${jobLabel(j)}</option>`;
+    });
+  });
+
+  // Employee selects — ID + Name only, NO designation
+  const empLabel=m=>`${m.id} — ${m.name}`;
+  ['e-emp','ee-emp','att-emp','hist-emp'].forEach(id=>{
+    const el=document.getElementById(id); if(!el)return;
+    const cur=el.value;
+    el.innerHTML=id==='att-emp'?'<option value="">All Employees</option>':'<option value="">— Select employee —</option>';
+    S.manpower.forEach(m=>el.innerHTML+=`<option value="${m.name}"${m.name===cur?' selected':''}>${empLabel(m)}</option>`);
+  });
+
+  // Supervisor selects
+  ['e-sup','ee-sup','j-sup','hist-sup'].forEach(id=>{
+    const el=document.getElementById(id); if(!el)return;
+    const cur=el.value;
+    el.innerHTML='<option value="">— Select —</option>';
+    supNames.forEach(n=>el.innerHTML+=`<option value="${n}"${n===cur?' selected':''}>${n}</option>`);
+  });
+  const empSupEl=document.getElementById('emp-sup'); if(empSupEl){
+    const cur=empSupEl.value; empSupEl.innerHTML='<option value="">— Select —</option>';
+    supNames.forEach(n=>empSupEl.innerHTML+=`<option value="${n}"${n===cur?' selected':''}>${n}</option>`);
+  }
+  const ib=document.getElementById('i-by'); if(ib){
+    const cur=ib.value; ib.innerHTML='<option value="Production Engineer">Production Engineer</option>';
+    supNames.forEach(n=>ib.innerHTML+=`<option value="${n}"${n===cur?' selected':''}>${n}</option>`);
+  }
+  renderVehicleTypes();
+  renderDepts();
+  renderHistRecords();
+}
+
+// ═══════════════════════════════════════════
+//  REFRESH ALL
+// ═══════════════════════════════════════════
+function refreshAll(){
+  checkMHAlerts();
+  updateDropdowns();
+  applyBranding();
+  renderSupSettings();
+  renderUsersSettings();
+  renderOverview();
+  renderJobs();
+  renderSupPanels();
+  renderEntries();
+  renderManHours();
+  renderIssues();
+  renderManpower();
+  renderNotifs();
+  renderHistory();
+}
+
+// ═══════════════════════════════════════════
+//  OVERVIEW
+// ═══════════════════════════════════════════
+// ─── Sort/Filter state ───
+let ovSortCol=-1, ovSortDir=1;
+let jobSortCol=-1, jobSortDir=1;
+let ovFilteredJobs=null, jobFilteredJobs=null;
+
+function renderOverview(){
+  const t=today();
+  const totalWOs=S.jobs.length;
+  const openI=S.issues.filter(i=>i.status==='Open').length;
+  const todayHrs=S.entries.filter(e=>e.date===t).reduce((a,e)=>a+eTotalHrs(e),0);
+  const todayAtt=new Set(S.entries.filter(e=>e.date===t&&e.att==='Present').map(e=>e.emp)).size;
+  const mhW=S.mhAlerts.length;
+  const compJobs=S.jobs.filter(j=>j.status==='Completed').length;
+
+  document.getElementById('ov-kpis').innerHTML=`
+    <div class="kcard kb"><div class="klbl">Work Orders</div><div class="kval">${totalWOs}</div><div class="ksub">Total</div></div>
+    <div class="kcard kg"><div class="klbl">Completed</div><div class="kval">${compJobs}</div><div class="ksub">Done</div></div>
+    <div class="kcard kr"><div class="klbl">Open Issues</div><div class="kval">${openI}</div><div class="ksub">Needs action</div></div>
+    <div class="kcard kc"><div class="klbl">Today Hours</div><div class="kval">${todayHrs}</div><div class="ksub">Logged today</div></div>
+    <div class="kcard ko"><div class="klbl">Today Present</div><div class="kval">${todayAtt}</div><div class="ksub">Employees</div></div>
+    <div class="kcard kp"><div class="klbl">MH Alerts</div><div class="kval">${mhW}</div><div class="ksub">Thresholds hit</div></div>
+  `;
+
+  // ── Horizontally scrollable bar chart ──
+  const BAR_W=52; // px per bar pair
+  const chartW=Math.max(S.jobs.length*BAR_W, 600);
+  const inner=document.getElementById('mh-chart-inner');
+  if(inner){ inner.style.width=chartW+'px'; inner.style.height='260px'; }
+  const cv=document.getElementById('ch-mh-ov');
+  if(cv){ cv.style.width=chartW+'px'; cv.style.height='260px'; }
+  const labels=S.jobs.map(j=>`#${j.sn}`);
+  const estData=S.jobs.map(j=>j.estMH||0);
+  const actData=S.jobs.map(j=>actualHrs(j.sn));
+  if(charts['ch-mh-ov']){charts['ch-mh-ov'].destroy();delete charts['ch-mh-ov'];}
+  if(cv){
+    charts['ch-mh-ov']=new Chart(cv.getContext('2d'),{
+      type:'bar',
+      data:{labels,datasets:[
+        {label:'Estimated Man Hours',data:estData,backgroundColor:'rgba(59,130,246,.55)',borderColor:'#3b82f6',borderWidth:1.5,borderRadius:4,barThickness:18},
+        {label:'Actual Man Hours',data:actData,backgroundColor:'rgba(245,158,11,.75)',borderColor:'#d97706',borderWidth:1.5,borderRadius:4,barThickness:18}
+      ]},
+      options:{
+        responsive:false,maintainAspectRatio:false,
+        plugins:{legend:{labels:{color:'#475569',font:{size:11}}},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw}h`}}},
+        scales:{
+          x:{ticks:{color:'#94a3b8',font:{size:10},maxRotation:45},grid:{display:false}},
+          y:{ticks:{color:'#94a3b8',callback:v=>v+'h'},grid:{color:'rgba(203,213,225,.5)'},title:{display:true,text:'Hours',color:'#94a3b8',font:{size:10}}}
+        }
+      }
+    });
+  }
+  // Drag-to-scroll on chart
+  initChartScroll();
+
+  // Vehicle type donut
+  const tc={};S.jobs.forEach(j=>{tc[j.type]=(tc[j.type]||0)+1});
+  mkChart('ch-type',{type:'doughnut',data:{labels:Object.keys(tc),datasets:[{data:Object.values(tc),backgroundColor:['#3b82f6','#10b981','#f59e0b','#8b5cf6','#ef4444','#22d3ee','#f43f5e','#84cc16'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#64748b',font:{size:10}}}}}});
+
+  // Populate table with filter state
+  ovFilteredJobs=[...S.jobs];
+  applyOvFilters();
+}
+
+function initChartScroll(){
+  const el=document.getElementById('mh-chart-scroll'); if(!el)return;
+  let isDown=false, startX=0, scrollLeft=0;
+  el.onmousedown=e=>{isDown=true;el.style.cursor='grabbing';startX=e.pageX-el.offsetLeft;scrollLeft=el.scrollLeft;};
+  el.onmouseleave=()=>{isDown=false;el.style.cursor='grab';};
+  el.onmouseup=()=>{isDown=false;el.style.cursor='grab';};
+  el.onmousemove=e=>{if(!isDown)return;e.preventDefault();const x=e.pageX-el.offsetLeft;el.scrollLeft=scrollLeft-(x-startX);};
+}
+
+function applyOvFilters(){
+  const fSN=(document.getElementById('ov-f-sn')||{}).value||'';
+  const fWO=(document.getElementById('ov-f-wo')||{}).value||'';
+  const fCust=(document.getElementById('ov-f-cust')||{}).value||'';
+  const fType=(document.getElementById('ov-f-type')||{}).value||'';
+  const fSup=(document.getElementById('ov-f-sup')||{}).value||'';
+  const fStat=(document.getElementById('ov-f-status')||{}).value||'';
+  const q=s=>s.toLowerCase();
+  ovFilteredJobs=S.jobs.filter(j=>
+    (!fSN||String(j.sn).toLowerCase().includes(q(fSN)))&&
+    (!fWO||String(j.wo).toLowerCase().includes(q(fWO)))&&
+    (!fCust||String(j.customer).toLowerCase().includes(q(fCust)))&&
+    (!fType||String(j.type).toLowerCase().includes(q(fType)))&&
+    (!fSup||String(j.supervisor).toLowerCase().includes(q(fSup)))&&
+    (!fStat||j.status===fStat)
+  );
+  if(ovSortCol>=0) ovFilteredJobs=sortJobsArr(ovFilteredJobs,ovSortCol,ovSortDir);
+  renderOvTable();
+}
+function clearOvFilters(){
+  ['ov-f-sn','ov-f-wo','ov-f-cust','ov-f-type','ov-f-sup','ov-f-status'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ovSortCol=-1;
+  document.querySelectorAll('#ov-table th').forEach(th=>{th.classList.remove('sort-asc','sort-desc');});
+  applyOvFilters();
+}
+function sortOvTable(col){
+  if(ovSortCol===col)ovSortDir*=-1; else{ovSortCol=col;ovSortDir=1;}
+  document.querySelectorAll('#ov-table th').forEach((th,i)=>{th.classList.remove('sort-asc','sort-desc');if(i===col)th.classList.add(ovSortDir===1?'sort-asc':'sort-desc');});
+  applyOvFilters();
+}
+// ─── Man-Hour Rate Calculation (cricket-style) ───
+// Required MH/Day = remaining hours ÷ remaining calendar days
+// Current MH/Day  = actual hours logged ÷ number of unique days with entries
+function calcMHRates(j){
+  const act=actualHrs(j.sn);
+  const plan=j.estMH||0;
+
+  // Current MH/Day — avg hours per day based on days with entries
+  const entryDates=new Set(S.entries.filter(e=>e.sn===j.sn).map(e=>e.date));
+  const daysWorked=entryDates.size;
+  const currentRate=daysWorked>0?Math.round((act/daysWorked)*10)/10:0;
+
+  // Required MH/Day — hours still needed ÷ working days remaining
+  let requiredRate=null;
+  if(plan>0&&j.delivery&&j.delivery!=='N/A'){
+    const remaining=Math.max(0,plan-act);
+    const daysLeft=Math.ceil((new Date(j.delivery)-new Date())/(1000*60*60*24));
+    const workDaysLeft=Math.max(1,Math.ceil(daysLeft*5/7)); // approx working days
+    requiredRate=daysLeft>0?Math.round((remaining/workDaysLeft)*10)/10:null;
+  }
+
+  return {currentRate, requiredRate, daysWorked, act, plan};
+}
+
+function renderOvTable(){
+  const tbody=document.getElementById('ov-jobs'); if(!tbody)return;
+  tbody.innerHTML='';
+  const now=new Date();
+  ovFilteredJobs.forEach(j=>{
+    const act=actualHrs(j.sn);
+    const pct=j.estMH>0?Math.round(act/j.estMH*100):0;
+    const ddays=Math.ceil((new Date(j.delivery)-now)/864e5);
+    const late=ddays<7&&j.status!=='Completed'&&j.delivery&&j.delivery!=='N/A';
+    const mhBar=pct>=100?'pb-r':pct>=80?'pb-y':'pb-b';
+    const stBadge=j.status==='Completed'?'bx-done':late?'bx-del':'bx-prog';
+
+    // ── Rate calculation ──
+    const {currentRate, requiredRate, daysWorked}=calcMHRates(j);
+    // Rate status: is current pace sufficient?
+    let rateCell='<span class="muted f10">—</span>';
+    if(requiredRate!==null&&currentRate>0){
+      const ratio=currentRate/requiredRate;
+      if(j.status==='Completed'){
+        rateCell='<span class="bx bx-done">Done</span>';
+      } else if(ratio>=1.0){
+        rateCell=`<span style="color:var(--green);font-weight:700;font-size:11px">✅ On Track</span><br><span class="f10 muted">${currentRate}≥${requiredRate}</span>`;
+      } else if(ratio>=0.7){
+        rateCell=`<span style="color:var(--yellow);font-weight:700;font-size:11px">⚠ Behind</span><br><span class="f10 muted">${currentRate}&lt;${requiredRate}</span>`;
+      } else {
+        rateCell=`<span style="color:var(--red);font-weight:700;font-size:11px">🔴 Critical</span><br><span class="f10 muted">${currentRate}&lt;${requiredRate}</span>`;
+      }
+    } else if(requiredRate===null&&currentRate>0){
+      rateCell=`<span class="f10 muted">${currentRate}h/day<br>(no deadline)</span>`;
+    }
+
+    tbody.innerHTML+=`<tr>
+      <td class="muted">${j.sn}</td>
+      <td><span class="blue fw6">${j.wo}</span></td><td>${j.customer}</td><td>${j.type}</td>
+      <td>${j.delivery||'—'}${late?'&nbsp;<span class="wt">⚠</span>':''}</td>
+      <td>${j.supervisor||'—'}</td>
+      <td class="fw6">${j.estMH||'—'}</td>
+      <td style="color:${pct>=90?'var(--red)':'var(--txt2)'};" class="fw6">${act}h</td>
+      <td style="background:#f8fbff;text-align:center">
+        ${requiredRate!==null?`<span style="font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;color:var(--blue)">${requiredRate}<span style="font-size:9px;font-weight:400;color:var(--txt3)"> h/day</span></span>`:'<span class="muted f10">—</span>'}
+      </td>
+      <td style="background:#f8fbff;text-align:center">
+        ${daysWorked>0?`<span style="font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;color:${requiredRate&&currentRate>=requiredRate?'var(--green)':requiredRate&&currentRate<requiredRate*0.7?'var(--red)':'var(--yellow)'}">${currentRate}<span style="font-size:9px;font-weight:400;color:var(--txt3)"> h/day</span></span><br><span class="f10 muted">${daysWorked}d worked</span>`:'<span class="muted f10">No entries</span>'}
+      </td>
+      <td style="background:#f8fbff;text-align:center;min-width:90px">${rateCell}</td>
+      <td style="min-width:110px">${j.estMH?`<div style="font-size:9px;color:var(--txt3);margin-bottom:3px">${pct}% used</div><div class="pb" style="height:7px"><div class="pb-f ${mhBar}" style="width:${Math.min(pct,100)}%"></div></div>`:'—'}</td>
+      <td><span class="bx ${stBadge}">${j.status}</span></td>
+    </tr>`;
+  });
+  const cnt=document.getElementById('ov-filter-count');
+  if(cnt) cnt.textContent=ovFilteredJobs.length<S.jobs.length?`Showing ${ovFilteredJobs.length} of ${S.jobs.length}`:'';
+  if(!ovFilteredJobs.length) tbody.innerHTML='<tr><td colspan="13" style="text-align:center;color:var(--txt3);padding:24px">No matching job orders.</td></tr>';
+}
+
+// ═══════════════════════════════════════════
+//  JOB ORDERS
+// ═══════════════════════════════════════════
+// ─── Job table sort/filter helpers ───
+function sortJobsArr(arr,col,dir){
+  const getVal=(j,c)=>{
+    const vals=[j.sn,j.wo,j.customer,j.type,j.delivery||'',j.estMH||0,j.supervisor||'',j.status];
+    return String(vals[c]||'').toLowerCase();
+  };
+  return [...arr].sort((a,b)=>{
+    const av=getVal(a,col), bv=getVal(b,col);
+    if(!isNaN(parseFloat(av))&&!isNaN(parseFloat(bv))) return (parseFloat(av)-parseFloat(bv))*dir;
+    return av.localeCompare(bv)*dir;
+  });
+}
+
+function applyJobFilters(){
+  const fSN=(document.getElementById('jf-sn')||{}).value||'';
+  const fWO=(document.getElementById('jf-wo')||{}).value||'';
+  const fCust=(document.getElementById('jf-cust')||{}).value||'';
+  const fType=(document.getElementById('jf-type')||{}).value||'';
+  const fSup=(document.getElementById('jf-sup')||{}).value||'';
+  const fStat=(document.getElementById('jf-status')||{}).value||'';
+  const q=s=>s.toLowerCase();
+  jobFilteredJobs=S.jobs.filter(j=>
+    (!fSN||String(j.sn).toLowerCase().includes(q(fSN)))&&
+    (!fWO||String(j.wo).toLowerCase().includes(q(fWO)))&&
+    (!fCust||String(j.customer).toLowerCase().includes(q(fCust)))&&
+    (!fType||String(j.type).toLowerCase().includes(q(fType)))&&
+    (!fSup||String(j.supervisor).toLowerCase().includes(q(fSup)))&&
+    (!fStat||j.status===fStat)
+  );
+  if(jobSortCol>=0) jobFilteredJobs=sortJobsArr(jobFilteredJobs,jobSortCol,jobSortDir);
+  renderJobsTable();
+}
+function clearJobFilters(){
+  ['jf-sn','jf-wo','jf-cust','jf-type','jf-sup','jf-status'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  jobSortCol=-1;
+  document.querySelectorAll('#pane-jobs th').forEach(th=>th.classList.remove('sort-asc','sort-desc'));
+  applyJobFilters();
+}
+function sortJobTable(col){
+  if(jobSortCol===col)jobSortDir*=-1; else{jobSortCol=col;jobSortDir=1;}
+  document.querySelectorAll('#pane-jobs th').forEach((th,i)=>{th.classList.remove('sort-asc','sort-desc');if(i===col)th.classList.add(jobSortDir===1?'sort-asc':'sort-desc');});
+  applyJobFilters();
+}
+
+function renderJobs(){
+  jobFilteredJobs=jobFilteredJobs||[...S.jobs];
+  applyJobFilters();
+}
+function renderJobsTable(){
+  const tbody=document.getElementById('jobs-tb'); if(!tbody)return;
+  tbody.innerHTML='';
+  (jobFilteredJobs||S.jobs).forEach((j)=>{
+    const idx=S.jobs.indexOf(j);
+    const act=actualHrs(j.sn);
+    const pct=j.estMH>0?Math.round(act/j.estMH*100):0;
+    const stBadge=j.status==='Completed'?'bx-done':j.status==='On Hold'?'bx-m':'bx-prog';
+    tbody.innerHTML+=`<tr>
+      <td class="muted">${j.sn}</td>
+      <td><span class="blue fw6">${j.wo}</span></td><td>${j.customer}</td><td>${j.type}</td>
+      <td>${j.delivery||'—'}</td>
+      <td class="fw6">${j.estMH||'—'} <span class="f10 muted">${pct?'('+pct+'% used)':''}</span></td>
+      <td>${j.supervisor||'—'}</td>
+      <td><span class="bx ${stBadge}">${j.status}</span></td>
+      <td style="white-space:nowrap">
+        ${curRole!=='viewer'?`<button class="btn btn-s btn-xs" onclick="openJobMo(${idx})">✏️</button>
+        <button class="btn btn-b btn-xs" onclick="openStatusMo(${idx})">📌</button>
+        ${curRole==='admin'?`<button class="btn btn-r btn-xs" onclick="delJob(${idx})">🗑️</button>`:''}`:''
+        }
+      </td>
+    </tr>`;
+  });
+  const cnt=document.getElementById('jf-count');
+  if(cnt&&jobFilteredJobs&&jobFilteredJobs.length<S.jobs.length) cnt.textContent=`Showing ${jobFilteredJobs.length} of ${S.jobs.length}`;
+  else if(cnt) cnt.textContent='';
+  if(!(jobFilteredJobs||S.jobs).length) tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--txt3);padding:24px">No job orders.</td></tr>';
+}
+
+function openJobMo(idx){
+  const edit=idx!==undefined;
+  document.getElementById('job-mo-t').textContent=edit?'Edit Job Order':'Add Job Order';
+  document.getElementById('j-idx').value=edit?idx:'';
+  const j=edit?S.jobs[idx]:{};
+  document.getElementById('j-sn').value=j.sn||'';
+  document.getElementById('j-wo').value=j.wo||'';
+  document.getElementById('j-cust').value=j.customer||'';
+  document.getElementById('j-type').value=j.type||'Truck Trailer';
+  document.getElementById('j-del').value=j.delivery||'';
+  document.getElementById('j-mh').value=j.estMH||'';
+  document.getElementById('j-stat').value=j.status||'In Progress';
+  updateDropdowns();
+  setTimeout(()=>{document.getElementById('j-sup').value=j.supervisor||'';},30);
+  openMo('mo-job');
+}
+function saveJob(){
+  const sn=document.getElementById('j-sn').value.trim();
+  const wo=document.getElementById('j-wo').value.trim()||'N/A';
+  const cust=document.getElementById('j-cust').value.trim()||'N/A';
+  if(!sn){toast('Serial Number is required','err');return;}
+  const idx=document.getElementById('j-idx').value;
+  const obj={sn,wo,customer:cust,type:document.getElementById('j-type').value,delivery:document.getElementById('j-del').value,estMH:parseFloat(document.getElementById('j-mh').value)||0,supervisor:document.getElementById('j-sup').value,status:document.getElementById('j-stat').value};
+  if(idx===''){ if(S.jobs.find(j=>j.sn===sn)){toast('Serial Number already exists','err');return;} S.jobs.push(obj); }
+  else S.jobs[parseInt(idx)]=obj;
+  save();closeMo('mo-job');toast(idx===''?'Added':'Updated');refreshAll();
+}
+function delJob(idx){ if(!confirm('Delete?'))return; S.jobs.splice(idx,1);save();refreshAll();toast('Deleted','warn'); }
+
+function openStatusMo(idx){ document.getElementById('st-wo-idx').value=idx;document.getElementById('st-stat').value=S.jobs[idx].status;openMo('mo-status'); }
+function saveStatus(){ const i=parseInt(document.getElementById('st-wo-idx').value);S.jobs[i].status=document.getElementById('st-stat').value;save();closeMo('mo-status');toast('Status updated');refreshAll(); }
+
+// ═══════════════════════════════════════════
+//  SUPERVISORS PANELS
+// ═══════════════════════════════════════════
+function renderSupPanels(){
+  const container=document.getElementById('sup-panels'); if(!container)return;
+  const t=today();
+  container.innerHTML=S.supervisors.map((s,si)=>{
+    const color=SUP_COLORS[si%SUP_COLORS.length];
+    const myEmp=S.manpower.filter(m=>m.sup===s.name);
+    const totalMp=myEmp.length;
+    const todayEnt=S.entries.filter(e=>e.date===t&&e.sup===s.name);
+    const todayPresent=new Set(todayEnt.filter(e=>e.att==="Present").map(e=>e.emp)).size;
+    const todayHrs=todayEnt.reduce((a,e)=>a+eTotalHrs(e),0);
+    const allMyJobs=S.jobs.filter(j=>j.supervisor===s.name);
+    const activeJobs=allMyJobs.filter(j=>j.status==="In Progress");
+    const compJobs=allMyJobs.filter(j=>j.status==="Completed");
+    const onHoldJobs=allMyJobs.filter(j=>j.status==="On Hold");
+    const avHtml=s.photo?`<img src="${s.photo}" style="width:48px;height:48px;object-fit:cover;border-radius:50%">`:`<span style="font-size:20px;font-weight:700;color:#fff">${s.name[0]||"S"}</span>`;
+    const jobRows=allMyJobs.slice(0,8).map(j=>{
+      const act=actualHrs(j.sn);
+      const pct=j.estMH>0?Math.min(Math.round(act/j.estMH*100),100):0;
+      const bar=j.status==="Completed"?"pb-g":pct>=80?"pb-r":pct>=50?"pb-y":"pb-b";
+      const badge=j.status==="Completed"?"bx-done":j.status==="On Hold"?"bx-m":"bx-prog";
+      return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+        <span style="font-size:10px;color:var(--txt3);width:24px;flex-shrink:0">#${j.sn}</span>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:10px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${j.type}</div>
+          <div style="font-size:9px;color:var(--txt3)">${j.wo&&j.wo!=="N/A"?"WO: "+j.wo:j.customer||"—"}</div>
+        </div>
+        <span class="bx ${badge}" style="flex-shrink:0">${j.status}</span>
+        ${j.estMH?`<div class="pb" style="width:44px;height:5px;flex-shrink:0"><div class="pb-f ${bar}" style="width:${pct}%"></div></div>`:""}
+      </div>`;
+    }).join("");
+    const extraJobs=allMyJobs.length>8?`<div style="font-size:10px;color:var(--txt3);padding:6px 0;text-align:center">+ ${allMyJobs.length-8} more</div>`:"";
+    return `<div class="sup-panel">
+      <div class="sup-hdr" style="background:linear-gradient(135deg,${color}18,${color}06)">
+        <div class="sup-av" style="background:${color};border-radius:50%;overflow:hidden">${avHtml}</div>
+        <div style="flex:1">
+          <div class="sup-name">${s.name}</div>
+          <div class="sup-role">${s.role}</div>
+          ${curRole==="admin"?`<button class="btn btn-s btn-xs" style="margin-top:5px" onclick="openSupMo(${si})">✏️ Edit</button>`:""}
+        </div>
+      </div>
+      <div class="sup-body">
+        <div class="sup-stats" style="grid-template-columns:repeat(4,1fr)">
+          <div class="ss"><div class="ss-v" style="color:${color}">${totalMp}</div><div class="ss-l">Total<br>Manpower</div></div>
+          <div class="ss"><div class="ss-v" style="color:${color}">${todayPresent}</div><div class="ss-l">Today<br>Present</div></div>
+          <div class="ss"><div class="ss-v" style="color:${color}">${activeJobs.length}</div><div class="ss-l">Active<br>Jobs</div></div>
+          <div class="ss"><div class="ss-v" style="color:var(--green)">${compJobs.length}</div><div class="ss-l">Completed<br>Jobs</div></div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+          <span style="font-size:10px;color:var(--txt3)">Status:</span>
+          ${activeJobs.length?`<span class="bx bx-prog">${activeJobs.length} Active</span>`:""}
+          ${compJobs.length?`<span class="bx bx-done">${compJobs.length} Done</span>`:""}
+          ${onHoldJobs.length?`<span class="bx bx-m">${onHoldJobs.length} On Hold</span>`:""}
+          ${!allMyJobs.length?`<span class="f10 muted">No jobs assigned</span>`:""}
+        </div>
+        ${allMyJobs.length?`<div style="max-height:200px;overflow-y:auto">${jobRows}${extraJobs}</div>`:""}
+        ${todayHrs>0?`<div style="margin-top:8px;padding:6px 10px;background:var(--bg3);border-radius:var(--rr);font-size:11px;color:var(--txt2)">🕐 Today: <strong>${todayHrs}h</strong> — ${todayEnt.length} entries</div>`:""}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+
+function openSupMo(si){
+  const edit=si>=0;
+  document.getElementById('sup-mo-t').textContent=edit?'Edit Supervisor':'Add Supervisor';
+  document.getElementById('sup-idx').value=si;
+  const s=edit?S.supervisors[si]:{};
+  document.getElementById('sup-name').value=s.name||'';
+  document.getElementById('sup-role').value=s.role||'Production Supervisor';
+  supPhB64=s.photo||null;
+  document.getElementById('sup-ph-prev').innerHTML=supPhB64?`<img src="${supPhB64}" style="width:52px;height:52px;border-radius:50%;object-fit:cover">`:' ';
+  openMo('mo-sup');
+}
+function prevSupPh(inp){
+  if(!inp||!inp.files||!inp.files[0])return;
+  const r=new FileReader();
+  r.onload=function(e){
+    supPhB64=e.target.result;
+    const el=document.getElementById('sup-ph-prev');
+    if(el) el.innerHTML=`<img src="${supPhB64}" style="width:52px;height:52px;border-radius:50%;object-fit:cover">`;
+  };
+  r.readAsDataURL(inp.files[0]);
+}
+function saveSup(){
+  const si=parseInt(document.getElementById('sup-idx').value);
+  const oldName=si>=0?S.supervisors[si].name:'';
+  const newName=document.getElementById('sup-name').value.trim();
+  if(!newName){toast('Name required','err');return;}
+  const obj={name:newName,role:document.getElementById('sup-role').value.trim()||'Production Supervisor',photo:supPhB64};
+  if(si<0){ S.supervisors.push(obj); }
+  else {
+    S.supervisors[si]=obj;
+    // sync old name references
+    S.entries.forEach(e=>{if(e.sup===oldName)e.sup=newName;});
+    S.manpower.forEach(m=>{if(m.sup===oldName)m.sup=newName;});
+    S.jobs.forEach(j=>{if(j.supervisor===oldName)j.supervisor=newName;});
+    S.issues.forEach(i=>{if(i.by===oldName)i.by=newName;});
+  }
+  save();closeMo('mo-sup');toast('Supervisor saved');refreshAll();
+}
+function delSup(si){ if(!confirm('Delete supervisor?'))return; S.supervisors.splice(si,1);save();refreshAll();toast('Deleted','warn'); }
+
+// ═══════════════════════════════════════════
+//  DAILY ENTRY
+// ═══════════════════════════════════════════
+function renderEntries(){
+  const fd=document.getElementById('ef-date')?.value||'';
+  const rows=fd?S.entries.filter(e=>e.date===fd):[...S.entries];
+  const sorted=[...rows].sort((a,b)=>b.date.localeCompare(a.date));
+  const tbody=document.getElementById('entry-tb'); tbody.innerHTML='';
+  sorted.forEach((e,dispIdx)=>{
+    const ri=S.entries.indexOf(e);
+    // sn is stored directly in the entry; for old entries fall back to job lookup
+    const sn=e.sn||(S.jobs.find(j=>j.wo===e.wo)||{}).sn||'—';
+    const woDisplay=e.wo||sn;
+    tbody.innerHTML+=`<tr>
+      <td class="muted">${sn}</td>
+      <td>${e.date}</td><td>${e.sup}</td><td>${e.emp}</td><td><span class="blue">${woDisplay}</span></td>
+      <td>${e.stage}</td>
+      <td><span class="bx ${e.att==='Present'?'bx-pr':'bx-ab'}">${e.att}</span></td>
+      <td class="tacc">${e.baseHrs||0}</td><td class="tacc">${e.ot||0}</td><td class="tacc fw6">${eTotalHrs(e)}</td>
+      <td style="white-space:nowrap">
+        ${curRole!=='viewer'?`<button class="btn btn-s btn-xs" onclick="openEditEntry(${ri})">✏️</button><button class="btn btn-r btn-xs" onclick="delEntry(${ri})">🗑️</button>`:''}
+      </td>
+    </tr>`;
+  });
+  if(!rows.length) tbody.innerHTML='<tr><td colspan="11" style="text-align:center;color:var(--txt3);padding:24px">No entries.</td></tr>';
+}
+
+function addEntry(){
+  const date=document.getElementById('e-date').value;
+  const sup=document.getElementById('e-sup').value;
+  const sn=document.getElementById('e-wo').value;
+  const stage=document.getElementById('e-stage').value;
+  const emp=document.getElementById('e-emp').value;
+  const att=document.getElementById('e-att').value;
+  const ot=parseFloat(document.getElementById('e-ot').value)||0;
+
+  // ── Required field check ──
+  if(!date||!sup||!sn||!stage||!emp) return toast('⚠ Please fill all required fields','err');
+
+  // ── Duplicate entry check — same employee + same date ──
+  const existing=S.entries.find(e=>e.emp===emp&&e.date===date&&(e.sn===sn||e.wo===sn));
+  if(existing){
+    return toast(`⚠ ${emp} already has an entry on ${date} for this job. Delete or edit the existing entry.`,'err');
+  }
+
+  // ── Max OT cap: 4 hours ──
+  if(ot>4){ return toast('⚠ Overtime cannot exceed 4 hours (max total 12h/day)','err'); }
+
+  // ── Max total hours check: 8 base + 4 OT = 12 max ──
+  if(att==='Present'){
+    const existingHrsToday=S.entries
+      .filter(e=>e.emp===emp&&e.date===date)
+      .reduce((a,e)=>a+eTotalHrs(e),0);
+    const newTotal=8+ot+existingHrsToday;
+    if(newTotal>12){
+      return toast(`⚠ This entry would bring ${emp}'s total to ${newTotal}h on ${date}. Max allowed is 12h/day.`,'err');
+    }
+  }
+
+  const job=S.jobs.find(j=>j.sn===sn)||{};
+  const entry={
+    date, sup, sn,
+    wo:job.wo||sn,
+    customer:job.customer||'',
+    type:job.type||'',
+    stage, emp, att,
+    baseHrs:att==='Present'?8:0,
+    ot:att==='Present'?ot:0
+  };
+  S.entries.push(entry); save(); toast('✅ Entry added'); refreshAll();
+}
+function clearEF(){
+  document.getElementById('e-date').value=today();
+  ['e-sup','e-wo','e-stage','e-emp'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('e-att').value='Present';
+  document.getElementById('e-ot').value='';
+}
+function openEditEntry(ri){
+  const e=S.entries[ri];
+  document.getElementById('ee-idx').value=ri;
+  document.getElementById('ee-date').value=e.date;
+  document.getElementById('ee-stage').value=e.stage;
+  document.getElementById('ee-att').value=e.att;
+  document.getElementById('ee-ot').value=e.ot||0;
+  updateDropdowns();
+  // ee-wo now uses sn as value
+  setTimeout(()=>{
+    document.getElementById('ee-sup').value=e.sup;
+    document.getElementById('ee-wo').value=e.sn||e.wo; // fallback for old entries
+    document.getElementById('ee-emp').value=e.emp;
+  },30);
+  openMo('mo-entry');
+}
+function saveEditEntry(){
+  const ri=parseInt(document.getElementById('ee-idx').value);
+  const att=document.getElementById('ee-att').value;
+  const ot=parseFloat(document.getElementById('ee-ot').value)||0;
+  const sn=document.getElementById('ee-wo').value;
+  const job=S.jobs.find(j=>j.sn===sn)||{};
+  S.entries[ri]={
+    date:document.getElementById('ee-date').value,
+    sup:document.getElementById('ee-sup').value,
+    sn:sn, wo:job.wo||sn,
+    customer:job.customer||'', type:job.type||'',
+    stage:document.getElementById('ee-stage').value,
+    emp:document.getElementById('ee-emp').value,
+    att,baseHrs:att==='Present'?8:0,ot:att==='Present'?ot:0
+  };
+  save();closeMo('mo-entry');toast('Updated');refreshAll();
+}
+function delEntry(ri){ S.entries.splice(ri,1);save();refreshAll();toast('Deleted','warn'); }
+
+// ═══════════════════════════════════════════
+//  MAN-HOURS
+// ═══════════════════════════════════════════
+function renderManHours(){
+  const tbody=document.getElementById('mh-tb'); tbody.innerHTML='';
+  const labels=[],est=[],act=[];
+  S.jobs.forEach(j=>{
+    const a=actualHrs(j.sn); const p=j.estMH||0;
+    const pct=p>0?Math.min(Math.round(a/p*100),999):0;
+    const rem=Math.max(0,p-a);
+    labels.push(`#${j.sn}`);est.push(p);act.push(a);
+    const bar=pct>=100?'pb-r':pct>=80?'pb-y':'pb-b';
+    const al=pct>=100?'<span class="bx bx-h">Exceeded</span>':pct>=90?'<span class="bx bx-m">Critical</span>':pct>=80?'<span class="bx bx-i">Warning</span>':'<span class="bx bx-l">Normal</span>';
+    tbody.innerHTML+=`<tr>
+      <td class="muted">${j.sn}</td><td><span class="blue fw6">${j.wo}</span></td><td>${j.customer}</td><td>${j.supervisor||'—'}</td>
+      <td class="tacc fw6">${p||'—'}</td>
+      <td class="tacc" style="color:${pct>=90?'var(--red)':'var(--txt2)'};font-weight:600">${a}h</td>
+      <td class="tacc">${p?rem+'h':'—'}</td>
+      <td class="tacc fw6" style="color:${pct>=100?'var(--red)':pct>=80?'var(--yellow)':'var(--green)'}">${p?pct+'%':'—'}</td>
+      <td style="min-width:120px">${p?`<div class="pb" style="height:9px"><div class="pb-f ${bar}" style="width:${Math.min(pct,100)}%"></div></div><div style="font-size:9px;color:var(--txt3);margin-top:3px">${a}h / ${p}h</div>`:'—'}</td>
+      <td>${al}</td>
+    </tr>`;
+  });
+  if(!S.jobs.length) tbody.innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--txt3);padding:24px">No job orders.</td></tr>';
+  mkChart('ch-mh-det',{type:'bar',data:{labels,datasets:[{label:'Estimated',data:est,backgroundColor:'rgba(59,130,246,.5)',borderColor:'#3b82f6',borderWidth:2,borderRadius:4},{label:'Actual',data:act,backgroundColor:'rgba(245,158,11,.75)',borderColor:'#d97706',borderWidth:2,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#64748b',font:{size:10}}}},scales:{x:{ticks:{color:'#94a3b8'},grid:{display:false}},y:{ticks:{color:'#94a3b8',callback:v=>v+'h'},grid:{color:'rgba(203,213,225,.5)'}}}}});
+  const al=document.getElementById('mh-alert-list');
+  al.innerHTML=S.mhAlerts.length===0?'<div class="empty-ni">✅ No man-hour warnings</div>':
+    S.mhAlerts.sort((a,b)=>b.th-a.th).map(a=>`<div class="ni warn"><div class="ni-wo">${a.wo} · ${a.customer}</div><div class="ni-desc">Consumed <strong>${a.pct}%</strong> of estimated hours (${a.act}h / ${a.plan}h)</div><div class="ni-meta"><span class="bx bx-h">${a.th}% Alert</span><span>${a.date}</span></div></div>`).join('');
+}
+
+// ═══════════════════════════════════════════
+//  ISSUES
+// ═══════════════════════════════════════════
+function renderIssues(){
+  const tbody=document.getElementById('iss-tb'); tbody.innerHTML='';
+  [...S.issues].reverse().forEach((iss,ri)=>{
+    const realIdx=S.issues.length-1-ri;
+    const sc=iss.status==='Resolved'?'bx-r':iss.status==='In Progress'?'bx-i':'bx-o';
+    const pc=iss.priority==='High'?'bx-h':iss.priority==='Low'?'bx-l':'bx-m';
+    tbody.innerHTML+=`<tr>
+      <td>${iss.date}</td><td><span class="blue">${iss.wo}</span></td><td>${iss.dept}</td>
+      <td style="max-width:180px;white-space:normal">${iss.desc}</td>
+      <td><span class="bx ${pc}">${iss.priority}</span></td>
+      <td>${iss.by}</td><td><span class="bx ${sc}">${iss.status}</span></td>
+      <td class="f11 muted" style="max-width:130px;white-space:normal">${iss.remarks||'—'}</td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-s btn-xs" onclick="openRemarks(${realIdx})">✏️</button>
+        ${curRole==='admin'?`<button class="btn btn-r btn-xs" onclick="delIssue(${realIdx})">🗑️</button>`:''}
+      </td>
+    </tr>`;
+  });
+  if(!S.issues.length) tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--txt3);padding:24px">No issues.</td></tr>';
+  document.getElementById('ic-o').textContent=S.issues.filter(i=>i.status==='Open').length;
+  document.getElementById('ic-i').textContent=S.issues.filter(i=>i.status==='In Progress').length;
+  document.getElementById('ic-r').textContent=S.issues.filter(i=>i.status==='Resolved').length;
+  const dc={};S.departments.forEach(d=>dc[d]=0);
+  S.issues.forEach(i=>{if(dc[i.dept]!==undefined)dc[i.dept]++;});
+  mkChart('ch-iss',{type:'pie',data:{labels:Object.keys(dc),datasets:[{data:Object.values(dc),backgroundColor:['#8b5cf6','#3b82f6','#f59e0b','#10b981','#ef4444','#22d3ee'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#64748b',font:{size:10}}}}}});
+}
+function submitIssue(){
+  const iss={id:'ISS-'+Date.now().toString().slice(-5),date:document.getElementById('i-date').value,wo:document.getElementById('i-wo').value,dept:document.getElementById('i-dept').value,desc:document.getElementById('i-desc').value.trim(),priority:document.getElementById('i-pri').value,by:document.getElementById('i-by').value,status:document.getElementById('i-stat').value,remarks:''};
+  if(!iss.date||!iss.wo||!iss.dept||!iss.desc)return toast('Fill all fields','err');
+  S.issues.push(iss);save();toast(`Issue raised → ${iss.dept} notified`);document.getElementById('i-desc').value='';refreshAll();
+}
+function openRemarks(ri){ document.getElementById('rm-idx').value=ri;document.getElementById('rm-stat').value=S.issues[ri].status;document.getElementById('rm-text').value=S.issues[ri].remarks||'';openMo('mo-rm'); }
+function saveRemarks(){ const ri=parseInt(document.getElementById('rm-idx').value);S.issues[ri].status=document.getElementById('rm-stat').value;S.issues[ri].remarks=document.getElementById('rm-text').value;save();closeMo('mo-rm');toast('Updated');refreshAll(); }
+function delIssue(ri){ S.issues.splice(ri,1);save();refreshAll();toast('Deleted','warn'); }
+
+// ═══════════════════════════════════════════
+//  MANPOWER
+// ═══════════════════════════════════════════
+function renderManpower(){
+  const tbody=document.getElementById('mp-tb'); tbody.innerHTML='';
+  S.manpower.forEach((m,idx)=>{
+    tbody.innerHTML+=`<tr>
+      <td><span class="blue">${m.id}</span></td><td>${m.name}</td>
+      <td>${m.dept||'—'}</td><td>${m.sup}</td><td>${m.desig}</td>
+      <td style="white-space:nowrap">
+        ${curRole!=='viewer'?`<button class="btn btn-s btn-xs" onclick="openEmpMo(${idx})">✏️</button>
+        ${curRole==='admin'?`<button class="btn btn-r btn-xs" onclick="delEmp(${idx})">🗑️</button>`:''}`:''}
+      </td>
+    </tr>`;
+  });
+  if(!S.manpower.length) tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--txt3);padding:24px">No employees.</td></tr>';
+  const kpis=document.getElementById('mp-kpis'); if(!kpis)return;
+  kpis.innerHTML=`<div class="kcard kb"><div class="klbl">Total Employees</div><div class="kval">${S.manpower.length}</div></div>
+  ${S.supervisors.map((s,i)=>{const c=S.manpower.filter(m=>m.sup===s.name).length;const clrs=['kb','kg','kp'];return`<div class="kcard ${clrs[i%3]}"><div class="klbl">${s.name.split(' ')[0]}</div><div class="kval">${c}</div><div class="ksub">team members</div></div>`;}).join('')}`;
+}
+function openEmpMo(idx){
+  const edit=idx!==undefined;
+  document.getElementById('emp-mo-t').textContent=edit?'Edit Employee':'Add Employee';
+  document.getElementById('emp-idx').value=edit?idx:'';
+  const m=edit?S.manpower[idx]:{};
+  document.getElementById('emp-id').value=m.id||'';
+  document.getElementById('emp-name').value=m.name||'';
+  document.getElementById('emp-dept').value=m.dept||'';
+  document.getElementById('emp-desig').value=m.desig||'Welder';
+  updateDropdowns();
+  setTimeout(()=>{if(m.sup)document.getElementById('emp-sup').value=m.sup;},30);
+  openMo('mo-emp');
+}
+function saveEmp(){
+  const id=document.getElementById('emp-id').value.trim(); const name=document.getElementById('emp-name').value.trim();
+  if(!id||!name){toast('ID & Name required','err');return;}
+  const idx=document.getElementById('emp-idx').value;
+  const obj={id,name,dept:document.getElementById('emp-dept').value.trim(),sup:document.getElementById('emp-sup').value,desig:document.getElementById('emp-desig').value};
+  if(idx==='') S.manpower.push(obj); else S.manpower[parseInt(idx)]=obj;
+  save();closeMo('mo-emp');toast(idx===''?'Added':'Updated');refreshAll();
+}
+function delEmp(idx){ S.manpower.splice(idx,1);save();refreshAll();toast('Deleted','warn'); }
+
+// ═══════════════════════════════════════════
+//  ATTENDANCE
+// ═══════════════════════════════════════════
+function setAttQ(){ const d=parseInt(document.getElementById('att-q').value);if(!d)return;const to=new Date();const fr=new Date();fr.setDate(fr.getDate()-d);document.getElementById('att-from').value=fr.toISOString().split('T')[0];document.getElementById('att-to').value=to.toISOString().split('T')[0]; }
+function runAtt(){
+  const emp=document.getElementById('att-emp').value;
+  const from=document.getElementById('att-from').value;
+  const to=document.getElementById('att-to').value;
+  let rows=S.entries;
+  if(emp) rows=rows.filter(e=>e.emp===emp);
+  if(from) rows=rows.filter(e=>e.date>=from);
+  if(to) rows=rows.filter(e=>e.date<=to);
+  const present=rows.filter(e=>e.att==='Present');
+  const days=new Set(present.map(e=>e.date)).size;
+  const totalHrs=rows.reduce((a,e)=>a+eTotalHrs(e),0);
+  // Group hours by "#SN | WO" label for chart
+  const woMap={};
+  present.forEach(e=>{
+    const sn=e.sn||(S.jobs.find(j=>j.wo===e.wo)||{}).sn||e.wo;
+    const lbl=`#${sn}`;
+    woMap[lbl]=(woMap[lbl]||0)+eTotalHrs(e);
+  });
+  document.getElementById('att-sum').innerHTML=`
+    <div class="col2" style="gap:10px;margin-bottom:10px">
+      <div class="kcard kb" style="padding:11px"><div class="klbl">Days Present</div><div class="kval" style="font-size:22px">${days}</div></div>
+      <div class="kcard kg" style="padding:11px"><div class="klbl">Total Hours</div><div class="kval" style="font-size:22px">${totalHrs}h</div></div>
+    </div>
+    <div class="f11 muted">Serial Numbers: <strong style="color:var(--txt)">${[...new Set(present.map(e=>e.sn||e.wo))].join(', ')||'None'}</strong></div>`;
+  const sorted=[...rows].sort((a,b)=>b.date.localeCompare(a.date));
+  const tbody=document.getElementById('att-tb'); tbody.innerHTML='';
+  sorted.forEach(e=>{
+    const sn=e.sn||(S.jobs.find(j=>j.wo===e.wo)||{}).sn||'—';
+    const woDisplay=e.wo||sn;
+    tbody.innerHTML+=`<tr><td class="muted">${sn}</td><td>${e.date}</td><td>${e.emp}</td><td>${e.sup}</td><td><span class="blue">${woDisplay}</span></td><td>${e.stage}</td><td><span class="bx ${e.att==='Present'?'bx-pr':'bx-ab'}">${e.att}</span></td><td class="tacc">${e.baseHrs||0}</td><td class="tacc">${e.ot||0}</td><td class="tacc fw6">${eTotalHrs(e)}</td></tr>`;
+  });
+  if(!rows.length) tbody.innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--txt3);padding:24px">No records.</td></tr>';
+  mkChart('ch-att',{type:'bar',data:{labels:Object.keys(woMap),datasets:[{label:'Hours',data:Object.values(woMap),backgroundColor:'#3b82f6',borderRadius:5,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#94a3b8'},grid:{display:false}},y:{ticks:{color:'#94a3b8'},grid:{color:'rgba(203,213,225,.5)'}}}}});
+}
+
+// ═══════════════════════════════════════════
+//  HISTORY
+// ═══════════════════════════════════════════
+function renderHistory(){
+  const comp=S.jobs.filter(j=>j.status==='Completed');
+  document.getElementById('hist-kpis').innerHTML=`
+    <div class="kcard kg"><div class="klbl">Completed</div><div class="kval">${comp.length}</div></div>
+    <div class="kcard kb"><div class="klbl">Total Entries</div><div class="kval">${S.entries.length}</div></div>
+    <div class="kcard ko"><div class="klbl">Total Logged</div><div class="kval">${S.entries.reduce((a,e)=>a+eTotalHrs(e),0)}h</div></div>`;
+  const tbody=document.getElementById('hist-tb'); tbody.innerHTML='';
+  comp.forEach(j=>{
+    const a=actualHrs(j.sn); const p=j.estMH||0;
+    const eff=p>0&&a>0?Math.round(p/a*100):100;
+    tbody.innerHTML+=`<tr>
+      <td class="muted">${j.sn}</td><td><span class="blue fw6">${j.wo}</span></td><td>${j.customer}</td><td>${j.supervisor||'—'}</td>
+      <td class="tacc">${p||'—'}</td><td class="tacc">${a}h</td>
+      <td class="tacc fw6" style="color:${eff>=100?'var(--green)':eff>=80?'var(--yellow)':'var(--red)'}">${p?eff+'%':'—'}</td>
+      <td>${j.delivery}</td>
+    </tr>`;
+  });
+  if(!comp.length) tbody.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--txt3);padding:24px">No completed work orders yet.</td></tr>';
+  renderHistLog();
+}
+function renderHistLog(){
+  const wof=document.getElementById('h-wo')?.value||'';
+  const from=document.getElementById('h-from')?.value||'';
+  const to=document.getElementById('h-to')?.value||'';
+  let rows=S.entries;
+  // h-wo now stores sn as value
+  if(wof) rows=rows.filter(e=>(e.sn||e.wo)===wof);
+  if(from) rows=rows.filter(e=>e.date>=from);
+  if(to) rows=rows.filter(e=>e.date<=to);
+  const sorted=[...rows].sort((a,b)=>b.date.localeCompare(a.date));
+  const tbody=document.getElementById('h-log-tb'); tbody.innerHTML='';
+  sorted.forEach(e=>{
+    const sn=e.sn||(S.jobs.find(j=>j.wo===e.wo)||{}).sn||'—';
+    const woDisplay=e.wo||sn;
+    tbody.innerHTML+=`<tr><td class="muted">${sn}</td><td>${e.date}</td><td>${e.sup}</td><td>${e.emp}</td><td><span class="blue">${woDisplay}</span></td><td>${e.stage}</td><td><span class="bx ${e.att==='Present'?'bx-pr':'bx-ab'}">${e.att}</span></td><td class="tacc fw6">${eTotalHrs(e)}h</td></tr>`;
+  });
+  if(!rows.length) tbody.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--txt3);padding:24px">No records.</td></tr>';
+}
+
+// ═══════════════════════════════════════════
+//  NOTIFICATIONS
+// ═══════════════════════════════════════════
+function renderNotifs(){
+  const grid=document.getElementById('np-dept-grid'); if(!grid)return;
+  const cols=S.departments.length<=2?S.departments.length:3;
+  grid.style.gridTemplateColumns=`repeat(${Math.min(cols,3)},1fr)`;
+  grid.innerHTML=S.departments.map(dept=>{
+    const iss=S.issues.filter(i=>i.dept===dept&&i.status!=='Resolved');
+    return `<div class="np">
+      <div class="np-hdr"><span class="np-title">${dept}</span><span class="np-badge">${iss.length}</span></div>
+      <div class="np-body">${iss.length===0?'<div class="empty-ni">✅ No pending issues</div>':
+        iss.map(i=>`<div class="ni ${i.priority.toLowerCase()}"><div class="ni-wo">${i.wo} · ${i.date}</div><div class="ni-desc">${i.desc}</div><div class="ni-meta"><span class="bx bx-${i.priority==='High'?'h':i.priority==='Low'?'l':'m'}">${i.priority}</span><span>${i.by}</span><span class="bx ${i.status==='Open'?'bx-o':'bx-i'}">${i.status}</span></div></div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  const mhEl=document.getElementById('np-mh');
+  document.getElementById('bdg-mh').textContent=S.mhAlerts.length;
+  if(mhEl) mhEl.innerHTML=S.mhAlerts.length===0?'<div class="empty-ni">✅ No man-hour warnings</div>':
+    S.mhAlerts.sort((a,b)=>b.th-a.th).map(a=>`<div class="ni warn"><div class="ni-wo">${a.wo} · ${a.customer}</div><div class="ni-desc">⚠ <strong>${a.wo}</strong> has consumed <strong>${a.pct}%</strong> of allocated man hours (${a.act}h used / ${a.plan}h estimated). Ensure production progress matches manpower consumption.</div><div class="ni-meta"><span class="bx bx-h">${a.th}% Threshold</span><span>${a.date}</span></div></div>`).join('');
+}
+
+
+// ═══════════════════════════════════════════
+//  HISTORICAL DATA (PRE-DASHBOARD RECORDS)
+// ═══════════════════════════════════════════
+function renderHistRecords(){
+  const tbody=document.getElementById('hist-records-tb'); if(!tbody)return;
+  const histEntries=S.entries.filter(e=>e.isHistorical);
+  const cntEl=document.getElementById('hist-count'); if(cntEl)cntEl.textContent=histEntries.length;
+  tbody.innerHTML='';
+  [...histEntries].sort((a,b)=>b.date.localeCompare(a.date)).forEach((e,i)=>{
+    const ri=S.entries.indexOf(e);
+    tbody.innerHTML+=`<tr>
+      <td>${e.date}</td><td class="muted">${e.sn||'—'}</td><td>${e.sup}</td><td>${e.emp}</td>
+      <td>${e.stage}</td><td><span class="bx ${e.att==='Present'?'bx-pr':'bx-ab'}">${e.att}</span></td>
+      <td class="tacc">${e.baseHrs||0}</td><td class="tacc">${e.ot||0}</td>
+      <td class="tacc fw6">${eTotalHrs(e)}</td>
+      <td><button class="btn btn-r btn-xs" onclick="delHistEntry(${ri})">🗑️</button></td>
+    </tr>`;
+  });
+  if(!histEntries.length) tbody.innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--txt3);padding:16px">No historical entries yet.</td></tr>';
+}
+
+function addHistEntry(){
+  const date=document.getElementById('hist-date').value;
+  const sup=document.getElementById('hist-sup').value;
+  const sn=document.getElementById('hist-sn').value;
+  const stage=document.getElementById('hist-stage').value;
+  const emp=document.getElementById('hist-emp').value;
+  const att=document.getElementById('hist-att').value;
+  const ot=parseFloat(document.getElementById('hist-ot').value)||0;
+  const stEl=document.getElementById('hist-manual-st');
+  if(!date||!sup||!sn||!stage||!emp){stEl.textContent='⚠ Fill all fields';stEl.style.color='var(--red)';return;}
+  if(ot>4){stEl.textContent='⚠ OT max 4 hours';stEl.style.color='var(--red)';return;}
+  const job=S.jobs.find(j=>j.sn===sn)||{};
+  const entry={date,sup,sn,wo:job.wo||sn,customer:job.customer||'',type:job.type||'',stage,emp,att,baseHrs:att==='Present'?8:0,ot:att==='Present'?ot:0,isHistorical:true};
+  S.entries.push(entry); save();
+  stEl.textContent=`✅ Historical entry added (${emp} — ${date})`;
+  stEl.style.color='var(--green)';
+  // clear form
+  document.getElementById('hist-ot').value='';
+  document.getElementById('hist-emp').value='';
+  renderHistRecords();
+  refreshAll();
+}
+
+function delHistEntry(ri){
+  if(!confirm('Remove this historical entry?'))return;
+  S.entries.splice(ri,1); save(); renderHistRecords(); refreshAll(); toast('Entry removed','warn');
+}
+
+function importHistoricalData(inp){
+  if(!inp||!inp.files||!inp.files[0])return;
+  const file=inp.files[0];
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      const data=new Uint8Array(ev.target.result);
+      const wb=XLSX.read(data,{type:'array',cellDates:true});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const aoa=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:true});
+      if(!aoa||aoa.length<2){toast('No data found in file','err');return;}
+      let added=0,skipped=0;
+      for(let i=1;i<aoa.length;i++){
+        const row=aoa[i];
+        // Cols: Serial(0) · Date(1) · Supervisor(2) · Employee(3) · Stage(4) · Attendance(5) · OT Hrs(6)
+        const sn=String(row[0]||'').trim();
+        const emp=String(row[3]||'').trim();
+        if(!sn||!emp){skipped++;continue;}
+        let dateStr='';
+        const rawDate=row[1];
+        if(rawDate instanceof Date){
+          const y=rawDate.getFullYear(),m=String(rawDate.getMonth()+1).padStart(2,'0'),d=String(rawDate.getDate()).padStart(2,'0');
+          dateStr=`${y}-${m}-${d}`;
+        } else dateStr=fmtDate(rawDate);
+        if(!dateStr){skipped++;continue;}
+        const att=String(row[5]||'Present').trim();
+        const ot=parseFloat(row[6])||0;
+        const job=S.jobs.find(j=>j.sn===sn)||{};
+        S.entries.push({
+          date:dateStr,
+          sup:String(row[2]||'').trim(),
+          sn, wo:job.wo||sn, customer:job.customer||'', type:job.type||'',
+          stage:String(row[4]||'').trim(),
+          emp, att,
+          baseHrs:att==='Present'||att==='present'?8:0,
+          ot:ot>4?4:ot,
+          isHistorical:true
+        });
+        added++;
+      }
+      save();
+      const stEl=document.getElementById('hist-upload-st');
+      if(stEl){stEl.textContent=`✅ Imported ${added} historical entries (${skipped} skipped)`;stEl.style.color='var(--green)';}
+      toast(`Imported ${added} historical entries`);
+      renderHistRecords(); refreshAll();
+    }catch(err){toast('Import error: '+err.message,'err');console.error(err);}
+  };
+  reader.onerror=function(){toast('Failed to read file','err');};
+  reader.readAsArrayBuffer(file);
+  inp.value='';
+}
+
+function dlHistTemplate(){
+  const {utils,write}=XLSX;
+  const data=[
+    ['Serial (Job SN)','Date','Supervisor','Employee Name','Stage','Attendance','Overtime Hrs'],
+    ['1','2026-01-15','Ahmed Hassan','Mohammed Al Rashidi','Fabrication','Present',2],
+    ['2','2026-01-15','Mohamed Ali','Ramesh Patel','Welding','Present',0]
+  ];
+  const ws=utils.aoa_to_sheet(data);
+  const wb=utils.book_new(); utils.book_append_sheet(wb,ws,'Historical');
+  const out=write(wb,{bookType:'xlsx',type:'binary'});
+  const buf=new ArrayBuffer(out.length);
+  const view=new Uint8Array(buf);
+  for(let i=0;i<out.length;i++) view[i]=out.charCodeAt(i)&0xff;
+  const blob=new Blob([buf],{type:'application/octet-stream'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='Historical_Data_Template.xlsx'; a.click();
+  toast('Template downloaded');
+}
+
+// ═══════════════════════════════════════════
+//  BACKUP
+// ═══════════════════════════════════════════
+function exportBackup(){
+  const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`gorica_backup_${today()}.json`;a.click();toast('Backup exported ✅');
+}
+function importBackup(inp){
+  if(!inp||!inp.files||!inp.files[0])return;
+  const r=new FileReader();
+  r.onload=function(e){
+    try{
+      const data=JSON.parse(e.target.result);
+      if(!data.jobs) throw new Error('Invalid backup file structure');
+      S=data;
+      if(!S.supervisors||!S.supervisors.length) S.supervisors=[{name:'Ahmed Hassan',role:'Production Supervisor',photo:null},{name:'Mohamed Ali',role:'Production Supervisor',photo:null},{name:'Khalid Al-Harbi',role:'Production Supervisor',photo:null}];
+      if(!S.departments) S.departments=['QC','Purchase','Sales'];
+      if(!S.mhAlerts) S.mhAlerts=[];
+      if(!S.cfg) S.cfg={title:'Gorica Arabia Production Management Dashboard',company:'Gorica Arabia Limited',logo:null,bgColor:'#f0f4f9',vehicleTypes:['Truck Trailer','Tanker','Tipper','Car Carrier','Waste Bin Carrier']};
+      if(!S.cfg.vehicleTypes||!S.cfg.vehicleTypes.length) S.cfg.vehicleTypes=['Truck Trailer','Tanker','Tipper','Car Carrier','Waste Bin Carrier'];
+      if(!S.cfg.bgColor) S.cfg.bgColor='#f0f4f9';
+      save(); toast('Backup restored ✅'); refreshAll();
+      const stEl=document.getElementById('bk-st');
+      if(stEl) stEl.textContent='✅ Backup imported successfully';
+    }catch(err){toast('Invalid backup file: '+err.message,'err');}
+  };
+  r.readAsText(inp.files[0]);
+  inp.value='';
+}
+
+// ═══════════════════════════════════════════
+//  PDF
+// ═══════════════════════════════════════════
+function repDate(){ return document.getElementById('rep-date')?.value||today(); }
+function repLabel(d){ return new Date(d+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}); }
+function pdfHdr(doc,title,sub){
+  const W=doc.internal.pageSize.getWidth();
+  // Dark blue header bar
+  doc.setFillColor(30,66,159); doc.rect(0,0,W,28,'F');
+  // White logo text
+  doc.setTextColor(255,255,255); doc.setFontSize(14); doc.setFont('helvetica','bold');
+  doc.text(S.cfg.company||'Gorica Arabia Limited',14,11);
+  doc.setFontSize(8); doc.setFont('helvetica','normal'); doc.setTextColor(200,210,230);
+  doc.text('Production Management Dashboard',14,19);
+  doc.setFontSize(10); doc.setFont('helvetica','bold'); doc.setTextColor(255,255,255);
+  doc.text(title,W-14,11,{align:'right'});
+  doc.setFontSize(7.5); doc.setFont('helvetica','normal'); doc.setTextColor(200,210,230);
+  doc.text(sub,W-14,19,{align:'right'});
+  // Accent line
+  doc.setFillColor(63,131,248); doc.rect(0,28,W,1.5,'F');
+  // Report title below
+  doc.setTextColor(30,41,59); doc.setFontSize(12); doc.setFont('helvetica','bold'); doc.text(title,14,40);
+  doc.setFontSize(8); doc.setFont('helvetica','normal'); doc.setTextColor(100,116,139); doc.text(sub,14,47);
+  return 54;
+}
+function pdfFtr(doc){
+  const W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight();
+  doc.setFillColor(240,244,248); doc.rect(0,H-8,W,8,'F');
+  doc.setFontSize(6.5); doc.setTextColor(148,163,184); doc.setFont('helvetica','normal');
+  doc.text(S.cfg.company+' — Confidential',14,H-2.5);
+  doc.text('Generated: '+new Date().toLocaleString(),W-14,H-2.5,{align:'right'});
+}
+function HS(){return{styles:{fontSize:7.5,cellPadding:2.5,textColor:[30,41,59]},headStyles:{fillColor:[30,66,159],textColor:[255,255,255],fontStyle:'bold'},alternateRowStyles:{fillColor:[247,250,252]},margin:{left:14,right:14},didDrawPage:()=>{}};}
+
+function exportPDF1(){
+  const {jsPDF}=window.jspdf; const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
+  const date=repDate(); const y0=pdfHdr(doc,'Daily Manpower Attendance Report',repLabel(date));
+  const rows=S.entries.filter(e=>e.date===date);
+  if(!rows.length){doc.setFontSize(11);doc.setTextColor(180,50,50);doc.text('No entries for '+date,14,y0+12);pdfFtr(doc);doc.save(`Attendance_${date}.pdf`);toast('PDF 1 (no data)');return;}
+  const data=rows.map(e=>{
+    const mp=S.manpower.find(m=>m.name===e.emp)||{};
+    // sn is stored directly in entry; fallback to job lookup for old entries
+    const sn=e.sn||(S.jobs.find(j=>j.wo===e.wo)||{}).sn||'—';
+    const woDisplay=e.wo||sn;
+    return[sn,e.date,e.sup,e.emp,mp.dept||'—',mp.desig||'—',woDisplay,e.stage,e.att,e.baseHrs||0,e.ot||0,eTotalHrs(e)+'h'];
+  });
+  const hs=HS(); hs.didDrawPage=()=>pdfFtr(doc);
+  doc.autoTable({startY:y0,head:[['Serial','Date','Supervisor','Employee','Department','Designation','Work Order','Stage','Attendance','Base Hrs','OT Hrs','Total']],body:data,...hs});
+  const fy=doc.lastAutoTable.finalY+7; const tot=rows.reduce((a,e)=>a+eTotalHrs(e),0);
+  doc.setFillColor(30,66,159); doc.roundedRect(14,fy,140,14,2,2,'F');
+  doc.setTextColor(255,255,255); doc.setFontSize(8); doc.setFont('helvetica','bold');
+  doc.text(`Total Entries: ${rows.length}`,20,fy+5); doc.text(`Total Hours: ${tot}h`,20,fy+11);
+  doc.text(`Present: ${rows.filter(e=>e.att==='Present').length}`,90,fy+5); doc.text(`Absent: ${rows.filter(e=>e.att==='Absent').length}`,90,fy+11);
+  pdfFtr(doc); doc.save(`Attendance_${date}.pdf`); toast('✅ PDF 1 exported');
+}
+function exportPDF2(){
+  const {jsPDF}=window.jspdf; const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
+  const date=repDate(); const y0=pdfHdr(doc,'Job Order Work Completion Report',repLabel(date));
+  if(!S.jobs.length){pdfFtr(doc);doc.save(`JobCompletion_${date}.pdf`);toast('No data');return;}
+  const now=new Date();
+  const data=S.jobs.map(j=>{
+    const a=actualHrs(j.sn); const p=j.estMH||0;
+    const pct=p>0?Math.round(a/p*100):0;
+    const ddays=Math.ceil((new Date(j.delivery)-now)/864e5);
+    const stat=j.status==='Completed'?'Complete':ddays<7?'DELAYED':'In Progress';
+    return[j.sn,j.wo,j.customer,j.type,j.supervisor||'—',j.delivery,p||'—',a+'h',p?pct+'%':'—',stat];
+  });
+  const hs=HS(); hs.didDrawPage=()=>pdfFtr(doc);
+  hs.didParseCell=d=>{if(d.section==='body'&&d.column.index===9){if(d.cell.raw==='Complete'){d.cell.styles.textColor=[22,163,74];d.cell.styles.fontStyle='bold';}else if(d.cell.raw==='DELAYED'){d.cell.styles.textColor=[220,38,38];d.cell.styles.fontStyle='bold';}else d.cell.styles.textColor=[217,119,6];}};
+  doc.autoTable({startY:y0,head:[['#','Work Order','Customer','Type','Supervisor','Delivery','Est.Hrs','Actual','MH%','Status']],body:data,...hs});
+  pdfFtr(doc); doc.save(`JobCompletion_${date}.pdf`); toast('✅ PDF 2 exported');
+}
+function exportPDF3(){
+  const {jsPDF}=window.jspdf; const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
+  const date=repDate(); const y0=pdfHdr(doc,'Pending Issues & Pain Points Report',repLabel(date));
+  const pending=S.issues.filter(i=>i.status!=='Resolved');
+  if(!pending.length){doc.setFontSize(11);doc.setTextColor(22,163,74);doc.text('✓ No pending issues.',14,y0+12);pdfFtr(doc);doc.save(`PendingIssues_${date}.pdf`);toast('No pending issues');return;}
+  const data=pending.map(i=>[i.wo,i.dept,i.desc.length>65?i.desc.slice(0,62)+'...':i.desc,i.priority,i.by,i.date,i.status,i.remarks||'—']);
+  const hs=HS(); hs.didDrawPage=()=>pdfFtr(doc);
+  hs.columnStyles={2:{cellWidth:68},7:{cellWidth:38}};
+  hs.didParseCell=d=>{if(d.section==='body'){if(d.column.index===3){if(d.cell.raw==='High'){d.cell.styles.textColor=[220,38,38];d.cell.styles.fontStyle='bold';}else if(d.cell.raw==='Medium')d.cell.styles.textColor=[217,119,6];else d.cell.styles.textColor=[37,99,235];}if(d.column.index===6&&d.cell.raw==='Open'){d.cell.styles.textColor=[220,38,38];d.cell.styles.fontStyle='bold';}}};
+  doc.autoTable({startY:y0,head:[['Work Order','Department','Description','Priority','Raised By','Date','Status','Remarks']],body:data,...hs});
+  pdfFtr(doc); doc.save(`PendingIssues_${date}.pdf`); toast('✅ PDF 3 exported');
+}
+function exportAll(){ exportPDF1(); setTimeout(exportPDF2,600); setTimeout(exportPDF3,1200); toast('📦 Exporting all 3 reports…'); }
+
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+function init(){
+  load();
+  document.getElementById('e-date').value=today();
+  document.getElementById('i-date').value=today();
+  document.getElementById('rep-date').value=today();
+  tick(); setInterval(tick,1000);
+  applyBranding();
+  // Don't auto-refresh all since user is on login screen
+  // refreshAll() will be called after login
+}
+window.addEventListener('load',init);
+</script>
+</body>
+</html>

@@ -1,0 +1,1673 @@
+{
+  "jobs": [
+    {
+      "sn": "6",
+      "wo": "602000200",
+      "customer": "SS102855",
+      "type": "Truck Trailer",
+      "delivery": "",
+      "estMH": 80,
+      "supervisor": "Iyad",
+      "status": "In Progress"
+    },
+    {
+      "sn": "7",
+      "wo": "602000201",
+      "customer": "SS102719",
+      "type": "Truck Trailer",
+      "delivery": "",
+      "estMH": 40,
+      "supervisor": "Yousof Maarof",
+      "status": "In Progress"
+    },
+    {
+      "sn": "8",
+      "wo": "602000199",
+      "customer": "TS103047",
+      "type": "Truck Trailer",
+      "delivery": "2026-04-11",
+      "estMH": 450,
+      "supervisor": "Chinmayee",
+      "status": "In Progress"
+    },
+    {
+      "sn": "20",
+      "wo": "602000194",
+      "customer": "SS102559",
+      "type": "RTK31N352SS102559",
+      "delivery": "CVD / UCC",
+      "estMH": 18000,
+      "supervisor": "1",
+      "status": "In Progress"
+    },
+    {
+      "sn": "25",
+      "wo": "602000202",
+      "customer": "RS102548",
+      "type": "RA0CR3C3XSS250005",
+      "delivery": "CVD / UCC",
+      "estMH": 18000,
+      "supervisor": "1",
+      "status": "In Progress"
+    },
+    {
+      "sn": "2",
+      "wo": "1",
+      "customer": "N/A",
+      "type": "Flatbed Semi-Trailer 38 TON",
+      "delivery": "N/A",
+      "estMH": 350,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "3",
+      "wo": "2",
+      "customer": "N/A",
+      "type": "Flatbed Semi-Trailer 38 TON",
+      "delivery": "N/A",
+      "estMH": 350,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "4",
+      "wo": "3",
+      "customer": "N/A",
+      "type": "Flatbed Semi-Trailer 38 TON",
+      "delivery": "N/A",
+      "estMH": 350,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "5",
+      "wo": "4",
+      "customer": "N/A",
+      "type": "Flatbed Semi-Trailer 38 TON",
+      "delivery": "N/A",
+      "estMH": 350,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "30",
+      "wo": "8",
+      "customer": "OKAM",
+      "type": "Curtain Side Single Deck Trailer",
+      "delivery": "N/A",
+      "estMH": 679,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "31",
+      "wo": "9",
+      "customer": "OKAM",
+      "type": "Curtain Side Single Deck Trailer",
+      "delivery": "N/A",
+      "estMH": 679,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "32",
+      "wo": "10",
+      "customer": "CVD / YAMAMAH",
+      "type": "Flatbed Semi-Trailer 12.5 m",
+      "delivery": "N/A",
+      "estMH": 400,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "33",
+      "wo": "11",
+      "customer": "CVD / YAMAMAH",
+      "type": "Flatbed Semi-Trailer 12.5 m",
+      "delivery": "N/A",
+      "estMH": 400,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "34",
+      "wo": "12",
+      "customer": "GSTC",
+      "type": "Cement Bulker 24 Cbm",
+      "delivery": "N/A",
+      "estMH": 800,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "35",
+      "wo": "13",
+      "customer": "GSTC",
+      "type": "Cement Bulker 24 Cbm",
+      "delivery": "N/A",
+      "estMH": 800,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "36",
+      "wo": "14",
+      "customer": "KABANI",
+      "type": "GALVANIZED WATER TANK 27,000 L",
+      "delivery": "N/A",
+      "estMH": 500,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "37",
+      "wo": "15",
+      "customer": "GLOVIS",
+      "type": "SKELETAL Semi-Trailer",
+      "delivery": "N/A",
+      "estMH": 350,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "38",
+      "wo": "16",
+      "customer": "GLOVIS",
+      "type": "SKELETAL Semi-Trailer",
+      "delivery": "N/A",
+      "estMH": 350,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "39",
+      "wo": "17",
+      "customer": "GLOVIS",
+      "type": "SKELETAL Semi-Trailer",
+      "delivery": "N/A",
+      "estMH": 350,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "40",
+      "wo": "18",
+      "customer": "GLOVIS",
+      "type": "SKELETAL Semi-Trailer",
+      "delivery": "N/A",
+      "estMH": 350,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "41",
+      "wo": "19",
+      "customer": "GLOVIS",
+      "type": "SKELETAL Semi-Trailer",
+      "delivery": "N/A",
+      "estMH": 350,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "42",
+      "wo": "20",
+      "customer": "Commander",
+      "type": "Dropside body",
+      "delivery": "N/A",
+      "estMH": 250,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "43",
+      "wo": "21",
+      "customer": "CVD/UD",
+      "type": "TIPPER BODY 16 CBM",
+      "delivery": "N/A",
+      "estMH": 300,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "44",
+      "wo": "22",
+      "customer": "CVD/UD",
+      "type": "TIPPER BODY 16 CBM",
+      "delivery": "N/A",
+      "estMH": 300,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "45",
+      "wo": "23",
+      "customer": "CVD/UD",
+      "type": "TIPPER BODY 16 CBM",
+      "delivery": "N/A",
+      "estMH": 300,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "46",
+      "wo": "24",
+      "customer": "CVD/UD",
+      "type": "TIPPER BODY 16 CBM",
+      "delivery": "N/A",
+      "estMH": 300,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "47",
+      "wo": "25",
+      "customer": "CVD/UD",
+      "type": "TIPPER BODY 16 CBM",
+      "delivery": "N/A",
+      "estMH": 300,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "48",
+      "wo": "26",
+      "customer": "CVD/UD",
+      "type": "TIPPER BODY 8 CBM on UD 4 x 2 Truck",
+      "delivery": "N/A",
+      "estMH": 180,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "49",
+      "wo": "27",
+      "customer": "CVD/UD",
+      "type": "TIPPER BODY 8 CBM on UD 4 x 2 Truck",
+      "delivery": "N/A",
+      "estMH": 180,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "50",
+      "wo": "28",
+      "customer": "CVD/UD",
+      "type": "TIPPER BODY 8 CBM on UD 4 x 2 Truck",
+      "delivery": "N/A",
+      "estMH": 180,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "51",
+      "wo": "29",
+      "customer": "CVD/UD",
+      "type": "TIPPER BODY 8 CBM on UD 4 x 2 Truck",
+      "delivery": "N/A",
+      "estMH": 180,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "52",
+      "wo": "30",
+      "customer": "BIN ZAGR",
+      "type": "BEVERAGE BODY 5.1 x 2.25 x 2.25 Mtr.",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "53",
+      "wo": "31",
+      "customer": "BIN ZAGR",
+      "type": "BEVERAGE BODY 5.1 x 2.25 x 2.25 Mtr.",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "54",
+      "wo": "32",
+      "customer": "BIN ZAGR",
+      "type": "BEVERAGE BODY 5.1 x 2.25 x 2.25 Mtr.",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "55",
+      "wo": "33",
+      "customer": "BIN ZAGR",
+      "type": "BEVERAGE BODY 5.1 x 2.25 x 2.25 Mtr.",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "56",
+      "wo": "34",
+      "customer": "BIN ZAGR",
+      "type": "BEVERAGE BODY 5.1 x 2.25 x 2.25 Mtr.",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "57",
+      "wo": "35",
+      "customer": "BIN ZAGR",
+      "type": "BEVERAGE BODY 5.1 x 2.25 x 2.25 Mtr.",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "58",
+      "wo": "36",
+      "customer": "BIN ZAGR",
+      "type": "BEVERAGE BODY 5.1 x 2.25 x 2.25 Mtr.",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "59",
+      "wo": "37",
+      "customer": "BIN ZAGR",
+      "type": "BEVERAGE BODY 5.1 x 2.25 x 2.25 Mtr.",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "60",
+      "wo": "38",
+      "customer": "BIN ZAGR",
+      "type": "BEVERAGE BODY 5.1 x 2.25 x 2.25 Mtr.",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "61",
+      "wo": "39",
+      "customer": "BIN ZAGR",
+      "type": "BEVERAGE BODY 5.1 x 2.25 x 2.25 Mtr.",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "62",
+      "wo": "40",
+      "customer": "BIN ZAGR",
+      "type": "BEVERAGE BODY 5.1 x 2.25 x 2.25 Mtr.",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "63",
+      "wo": "41",
+      "customer": "BIN ZAGR",
+      "type": "BEVERAGE BODY 5.1 x 2.25 x 2.25 Mtr.",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "64",
+      "wo": "42",
+      "customer": "BIN ZAGR",
+      "type": "BEVERAGE BODY 5.1 x 2.25 x 2.25 Mtr.",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "65",
+      "wo": "43",
+      "customer": "BIN ZAGR",
+      "type": "BEVERAGE BODY 5.1 x 2.25 x 2.25 Mtr.",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "66",
+      "wo": "44",
+      "customer": "BIN ZAGR",
+      "type": "BEVERAGE BODY 5.1 x 2.25 x 2.25 Mtr.",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "67",
+      "wo": "45",
+      "customer": "BIN ZAGR",
+      "type": "BEVERAGE BODY 5.1 x 2.25 x 2.25 Mtr.",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "68",
+      "wo": "46",
+      "customer": "BIN ZAGR",
+      "type": "BEVERAGE BODY 5.1 x 2.25 x 2.25 Mtr.",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "69",
+      "wo": "47",
+      "customer": "BIN ZAGR",
+      "type": "BEVERAGE BODY 5.1 x 2.25 x 2.25 Mtr.",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "70",
+      "wo": "48",
+      "customer": "BIN ZAGR",
+      "type": "BEVERAGE BODY 5.1 x 2.25 x 2.25 Mtr.",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "71",
+      "wo": "49",
+      "customer": "BIN ZAGR",
+      "type": "BEVERAGE BODY 5.1 x 2.25 x 2.25 Mtr.",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "72",
+      "wo": "50",
+      "customer": "commander",
+      "type": "Dropside body",
+      "delivery": "N/A",
+      "estMH": 250,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "73",
+      "wo": "51",
+      "customer": "CVD/UD",
+      "type": "TIPPER BODY 8 CBM on UD 4 x 2 Truck",
+      "delivery": "N/A",
+      "estMH": 180,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "74",
+      "wo": "52",
+      "customer": "CVD/UD",
+      "type": "TIPPER BODY 8 CBM on UD 4 x 2 Truck",
+      "delivery": "N/A",
+      "estMH": 180,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "75",
+      "wo": "53",
+      "customer": "CVD/UD",
+      "type": "TIPPER BODY 8 CBM on UD 4 x 2 Truck",
+      "delivery": "N/A",
+      "estMH": 180,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "76",
+      "wo": "54",
+      "customer": "CVD/UD",
+      "type": "TIPPER BODY 8 CBM on UD 4 x 2 Truck",
+      "delivery": "N/A",
+      "estMH": 180,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "77",
+      "wo": "55",
+      "customer": "CVD/UD",
+      "type": "TIPPER BODY 5 CBM on UD 4 x 2 Truck",
+      "delivery": "N/A",
+      "estMH": 180,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "78",
+      "wo": "56",
+      "customer": "CVD/UD",
+      "type": "TIPPER BODY 4.5CBM on UD 4 x 2 Truck",
+      "delivery": "N/A",
+      "estMH": 180,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "79",
+      "wo": "57",
+      "customer": "SBT",
+      "type": "Double Deck Curtain Side Semi-Trailer 15 m",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "80",
+      "wo": "58",
+      "customer": "SBT",
+      "type": "Double Deck Curtain Side Semi-Trailer 15 m",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "81",
+      "wo": "59",
+      "customer": "SBT",
+      "type": "Double Deck Curtain Side Semi-Trailer 15 m",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "82",
+      "wo": "60",
+      "customer": "SBT",
+      "type": "Double Deck Curtain Side Semi-Trailer 15 m",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "83",
+      "wo": "61",
+      "customer": "SBT",
+      "type": "Double Deck Curtain Side Semi-Trailer 15 m",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "84",
+      "wo": "62",
+      "customer": "SBT",
+      "type": "Double Deck Curtain Side Semi-Trailer 15 m",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "85",
+      "wo": "63",
+      "customer": "SBT",
+      "type": "Double Deck Curtain Side Semi-Trailer 15 m",
+      "delivery": "N/A",
+      "estMH": 0,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "86",
+      "wo": "64",
+      "customer": "Arabian Mills",
+      "type": "Curtain side 13.6 M",
+      "delivery": "N/A",
+      "estMH": 700,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "87",
+      "wo": "65",
+      "customer": "Arabian Mills",
+      "type": "Curtain side 13.6 M",
+      "delivery": "N/A",
+      "estMH": 700,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "1",
+      "wo": "N/A",
+      "customer": "N/A",
+      "type": "Flatbed Semi-Trailer 38 TON",
+      "delivery": "N/A",
+      "estMH": 350,
+      "supervisor": "",
+      "status": "In Progress"
+    },
+    {
+      "sn": "9",
+      "wo": "602000199",
+      "customer": "CVD / UCC",
+      "type": "18000 Lit Vacuum Tanker",
+      "delivery": "2026-04-08",
+      "estMH": 550,
+      "supervisor": "Chinmayee",
+      "status": "In Progress"
+    },
+    {
+      "sn": "10",
+      "wo": "602000199",
+      "customer": "CVD / UCC",
+      "type": "18000 Lit Vacuum Tanker",
+      "delivery": "2026-04-11",
+      "estMH": 550,
+      "supervisor": "Chinmayee",
+      "status": "In Progress"
+    },
+    {
+      "sn": "11",
+      "wo": "602000199",
+      "customer": "CVD / UCC",
+      "type": "18000 Lit Vacuum Tanker",
+      "delivery": "2026-04-12",
+      "estMH": 550,
+      "supervisor": "Chinmayee",
+      "status": "In Progress"
+    },
+    {
+      "sn": "12",
+      "wo": "602000199",
+      "customer": "CVD / UCC",
+      "type": "18000 Lit Vacuum Tanker",
+      "delivery": "2026-04-13",
+      "estMH": 550,
+      "supervisor": "Chinmayee",
+      "status": "In Progress"
+    },
+    {
+      "sn": "13",
+      "wo": "602000199",
+      "customer": "CVD / UCC",
+      "type": "18000 Lit Vacuum Tanker",
+      "delivery": "2026-04-14",
+      "estMH": 550,
+      "supervisor": "Chinmayee",
+      "status": "In Progress"
+    },
+    {
+      "sn": "14",
+      "wo": "602000199",
+      "customer": "CVD / UCC",
+      "type": "18000 Lit Vacuum Tanker",
+      "delivery": "2026-04-15",
+      "estMH": 550,
+      "supervisor": "Chinmayee",
+      "status": "In Progress"
+    },
+    {
+      "sn": "15",
+      "wo": "602000199",
+      "customer": "CVD / UCC",
+      "type": "18000 Lit Vacuum Tanker",
+      "delivery": "2026-04-18",
+      "estMH": 550,
+      "supervisor": "Chinmayee",
+      "status": "In Progress"
+    },
+    {
+      "sn": "16",
+      "wo": "602000199",
+      "customer": "CVD / UCC",
+      "type": "18000 Lit Vacuum Tanker",
+      "delivery": "2026-04-19",
+      "estMH": 550,
+      "supervisor": "Chinmayee",
+      "status": "In Progress"
+    },
+    {
+      "sn": "17",
+      "wo": "602000199",
+      "customer": "CVD / UCC",
+      "type": "18000 Lit Vacuum Tanker",
+      "delivery": "2026-04-20",
+      "estMH": 550,
+      "supervisor": "Iyad",
+      "status": "In Progress"
+    },
+    {
+      "sn": "18",
+      "wo": "602000199",
+      "customer": "CVD / UCC",
+      "type": "18000 Lit Vacuum Tanker",
+      "delivery": "2026-04-21",
+      "estMH": 550,
+      "supervisor": "Iyad",
+      "status": "In Progress"
+    },
+    {
+      "sn": "19",
+      "wo": "602000199",
+      "customer": "CVD / UCC",
+      "type": "18000 Lit Vacuum Tanker",
+      "delivery": "2026-04-22",
+      "estMH": 550,
+      "supervisor": "Iyad",
+      "status": "In Progress"
+    },
+    {
+      "sn": "21",
+      "wo": "602000194",
+      "customer": "CVD / UCC",
+      "type": "18000 Lit Water Tanker SS 304",
+      "delivery": "",
+      "estMH": 200,
+      "supervisor": "Chinmayee",
+      "status": "In Progress"
+    },
+    {
+      "sn": "22",
+      "wo": "602000194",
+      "customer": "CVD / UCC",
+      "type": "18000 Lit Water Tanker SS 304",
+      "delivery": "",
+      "estMH": 200,
+      "supervisor": "Chinmayee",
+      "status": "In Progress"
+    },
+    {
+      "sn": "23",
+      "wo": "602000194",
+      "customer": "CVD / UCC",
+      "type": "18000 Lit Water Tanker SS 304",
+      "delivery": "",
+      "estMH": 200,
+      "supervisor": "Chinmayee",
+      "status": "In Progress"
+    },
+    {
+      "sn": "24",
+      "wo": "602000194",
+      "customer": "CVD / UCC",
+      "type": "18000 Lit Water Tanker SS 304",
+      "delivery": "",
+      "estMH": 200,
+      "supervisor": "Chinmayee",
+      "status": "In Progress"
+    },
+    {
+      "sn": "26",
+      "wo": "602000202",
+      "customer": "CVD / UCC",
+      "type": "18000 Lit Water Tanker/ Galvanized",
+      "delivery": "",
+      "estMH": 400,
+      "supervisor": "Chinmayee",
+      "status": "In Progress"
+    },
+    {
+      "sn": "27",
+      "wo": "N/A",
+      "customer": "CVD / UCC",
+      "type": "Double Skip Loader",
+      "delivery": "",
+      "estMH": 250,
+      "supervisor": "Yousof Maarof",
+      "status": "In Progress"
+    },
+    {
+      "sn": "28",
+      "wo": "N/A",
+      "customer": "CVD / UCC",
+      "type": "Double Skip Loader",
+      "delivery": "",
+      "estMH": 250,
+      "supervisor": "Yousof Maarof",
+      "status": "In Progress"
+    },
+    {
+      "sn": "29",
+      "wo": "N/A",
+      "customer": "CVD / UCC",
+      "type": "Double Skip Loader",
+      "delivery": "",
+      "estMH": 250,
+      "supervisor": "Yousof Maarof",
+      "status": "In Progress"
+    }
+  ],
+  "manpower": [
+    {
+      "id": "15162",
+      "name": "Mouath Bahsan",
+      "dept": "ISM",
+      "sup": "Alaa Akra",
+      "desig": "Production Engineer"
+    },
+    {
+      "id": "14255",
+      "name": "Hashim Mujahid",
+      "dept": "ISM",
+      "sup": "Mouath Bahsan",
+      "desig": "Production Supervisor"
+    },
+    {
+      "id": "13520",
+      "name": "Yousef Maarouf",
+      "dept": "ISM",
+      "sup": "Mouath Bahsan",
+      "desig": "Foreman"
+    },
+    {
+      "id": "13526",
+      "name": "Aziz Qaws",
+      "dept": "ISM",
+      "sup": "Mouath Bahsan",
+      "desig": "Foreman"
+    },
+    {
+      "id": "13514",
+      "name": "YOUSEF THABIT",
+      "dept": "ISM",
+      "sup": "Yousof Maarof",
+      "desig": "Team Leader"
+    },
+    {
+      "id": "13516",
+      "name": "MOSTAFA FATHALLAH",
+      "dept": "ISM",
+      "sup": "Fayez Kahil",
+      "desig": "Machine Operator"
+    },
+    {
+      "id": "13524",
+      "name": "BISHAR ABDI",
+      "dept": "ISM",
+      "sup": "Yousof Maarof",
+      "desig": "Welder"
+    },
+    {
+      "id": "13527",
+      "name": "FAHAD AMEN",
+      "dept": "ISM",
+      "sup": "Yousof Maarof",
+      "desig": "Painter"
+    },
+    {
+      "id": "13528",
+      "name": "MOHAMED ASHRAF",
+      "dept": "ISM",
+      "sup": "Iyad Aboudah",
+      "desig": "Team Leader"
+    },
+    {
+      "id": "13529",
+      "name": "Ahmed Hasan Zaawari",
+      "dept": "ISM",
+      "sup": "Fayez Kahil",
+      "desig": "Machine Operator"
+    },
+    {
+      "id": "13797",
+      "name": "ALI MOHAMED MAAROUF",
+      "dept": "ISM",
+      "sup": "Yousof Maarof",
+      "desig": "Technician"
+    },
+    {
+      "id": "14147",
+      "name": "Ali Gaythan",
+      "dept": "ISM",
+      "sup": "Yousof Maarof",
+      "desig": "Electrician Assistant"
+    },
+    {
+      "id": "14150",
+      "name": "KHALID USMAN",
+      "dept": "ISM",
+      "sup": "Ali Fattouh",
+      "desig": "Tack Welder"
+    },
+    {
+      "id": "14174",
+      "name": "Abdulelah Al Harbi",
+      "dept": "ISM",
+      "sup": "Yousof Maarof",
+      "desig": "Technician assistant"
+    },
+    {
+      "id": "14201",
+      "name": "Ali Ahmed Rabiee",
+      "dept": "ISM",
+      "sup": "Yousof Maarof",
+      "desig": "Helper"
+    },
+    {
+      "id": "14907",
+      "name": "MD MONIR",
+      "dept": "ISM",
+      "sup": "Fayez Kahil",
+      "desig": "Machine Operator"
+    },
+    {
+      "id": "15328",
+      "name": "Mohammad Shafiullah",
+      "dept": "ISM",
+      "sup": "Fayez Kahil",
+      "desig": "CNC Lathe operator"
+    },
+    {
+      "id": "2624238974",
+      "name": "Shahjad Mansoor",
+      "dept": "Gorica",
+      "sup": "Chinmai",
+      "desig": ""
+    },
+    {
+      "id": "2624239170",
+      "name": "Mohammad Amalodin",
+      "dept": "Gorica",
+      "sup": "Chinmai",
+      "desig": ""
+    },
+    {
+      "id": "2606569305",
+      "name": "Mamun Mia",
+      "dept": "Gorica",
+      "sup": "Chinmai",
+      "desig": ""
+    },
+    {
+      "id": "2444680629",
+      "name": "Imon Hossain",
+      "dept": "Mariam",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2543586503",
+      "name": "NAJIB AHMED SAEED",
+      "dept": "Maseerat Al Na",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2567426966",
+      "name": "ABDULMOAMEN EBRAHEEM",
+      "dept": "Mariam",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2432878490",
+      "name": "FARHAD FOLLO MOLLA",
+      "dept": "Mariam",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2551494376",
+      "name": "MUHAMMED JUHANJIER",
+      "dept": "Maseerat Al Na",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2474203334",
+      "name": "MAZHAR ABBAS",
+      "dept": "Maseerat Al Na",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2601290774",
+      "name": "SAZZAD HOSSAIN",
+      "dept": "Maseerat Al Na",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2558125452",
+      "name": "AHMED QASEM",
+      "dept": "Maseerat Al Na",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2529216562",
+      "name": "SOPUN TAHER",
+      "dept": "Mariam",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2537733442",
+      "name": "MUHAMMED SOHIL",
+      "dept": "Maseerat Al Na",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2532625874",
+      "name": "MD MASUD",
+      "dept": "Mariam",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2456192869",
+      "name": "MOHAMMED HASSAN",
+      "dept": "Mariam",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2617264813",
+      "name": "MD ABDUR RAZZAQUE",
+      "dept": "Mariam",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2532351372",
+      "name": "Md Shihab",
+      "dept": "Mariam",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2461425114",
+      "name": "ARIF UDDIN BASHR UDDAN",
+      "dept": "Sayyadi",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2592806646",
+      "name": "RAJIB HOSSAIN",
+      "dept": "Mariam",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2597670864",
+      "name": "MOHMEED ALMAS",
+      "dept": "Mariam",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2617263781",
+      "name": "MD SUMON MIAH",
+      "dept": "Mariam",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2523294706",
+      "name": "AKRAM ABDUL WAHAB",
+      "dept": "Sayyadi",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2446330009",
+      "name": "PANVEZ MIAH",
+      "dept": "Mariam",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2199287497",
+      "name": "ANOWAR MUHAMMED",
+      "dept": "Sayyadi",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2598761191",
+      "name": "Khaled Mohammed",
+      "dept": "Mariam",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2605535661",
+      "name": "Jolhas Nalo Mollah",
+      "dept": "Mariam",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2575431552",
+      "name": "Md Shamsul",
+      "dept": "Mariam",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2244493694",
+      "name": "Ripon Mohammad Rofik",
+      "dept": "Mariam",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2602146280",
+      "name": "Jewel hossain",
+      "dept": "Noora",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2240117933",
+      "name": "Faruk Safiuddin Molla",
+      "dept": "Noora",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2442491987",
+      "name": "Jobayer Anis molla",
+      "dept": "Noora",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2349108874",
+      "name": "Mohammad Sahid khan Durjan",
+      "dept": "Noora",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2242101059",
+      "name": "Mohammad Uzzal Miaz Uddin",
+      "dept": "Noora",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2520279680",
+      "name": "Md Mijanur Rahman",
+      "dept": "Noora",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2310472960",
+      "name": "Md Arif Md Sahla Uddin",
+      "dept": "Noora",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2545465920",
+      "name": "Jamil Hasan chowodhury",
+      "dept": "Noora",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2620875746",
+      "name": "Muhammad Adnan Lund",
+      "dept": "Noora",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2572247746",
+      "name": "Rahen Abdul kadher",
+      "dept": "Noora",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2607914542",
+      "name": "Shahid Ali Ghufran Ullah",
+      "dept": "Noora",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2512584380",
+      "name": "MRIDUL BHUIYAN",
+      "dept": "Sayyadi",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2485986588",
+      "name": "Manzoor Muhammad Sher",
+      "dept": "Maseerat Al Na",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2547924569",
+      "name": "Md Azgor ali",
+      "dept": "Noora",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2563600432",
+      "name": "Mohammad Julhas",
+      "dept": "Noora",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2583665589",
+      "name": "Harun khelo Miah",
+      "dept": "Noora",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2563372651",
+      "name": "Muhammad Imran",
+      "dept": "Noora",
+      "sup": "Yousof Maarof",
+      "desig": ""
+    },
+    {
+      "id": "2462269701",
+      "name": "MAD ABDULAHAD",
+      "dept": "MASEERAT AL NAMAA",
+      "sup": "Aziz Qaws",
+      "desig": ""
+    },
+    {
+      "id": "2492120585",
+      "name": "Mohammad Noyon",
+      "dept": "MASEERAT AL NAMAA",
+      "sup": "Aziz Qaws",
+      "desig": ""
+    },
+    {
+      "id": "2558941395",
+      "name": "MD RIPON",
+      "dept": "Mariem",
+      "sup": "Aziz Qaws",
+      "desig": ""
+    },
+    {
+      "id": "2553092368",
+      "name": "ROBIOL HOSSAIN",
+      "dept": "MASEERAT AL NAMAA",
+      "sup": "Aziz Qaws",
+      "desig": ""
+    },
+    {
+      "id": "2422167730",
+      "name": "ABDUL WAHID",
+      "dept": "MASEERAT AL NAMAA",
+      "sup": "Aziz Qaws",
+      "desig": ""
+    },
+    {
+      "id": "2545293058",
+      "name": "MUHAMMAD SAIF",
+      "dept": "MASEERAT AL NAMAA",
+      "sup": "Aziz Qaws",
+      "desig": ""
+    },
+    {
+      "id": "2485656496",
+      "name": "MOHAMMED SOHIL",
+      "dept": "Mariem",
+      "sup": "Aziz Qaws",
+      "desig": ""
+    },
+    {
+      "id": "2438367555",
+      "name": "MOHAMMED YOUSEF",
+      "dept": "Mariem",
+      "sup": "Aziz Qaws",
+      "desig": ""
+    },
+    {
+      "id": "2430514782",
+      "name": "MD MONIR",
+      "dept": "Mariem",
+      "sup": "Aziz Qaws",
+      "desig": ""
+    },
+    {
+      "id": "2400829822",
+      "name": "NAYEM SHKDER HARON",
+      "dept": "Mariem",
+      "sup": "Aziz Qaws",
+      "desig": ""
+    },
+    {
+      "id": "2549489561",
+      "name": "GHAITH EBRAHEEM  HADI",
+      "dept": "Mariem",
+      "sup": "Aziz Qaws",
+      "desig": ""
+    },
+    {
+      "id": "2188907840",
+      "name": "SERAG ISLAM",
+      "dept": "MASEERAT AL NAMAA",
+      "sup": "Aziz Qaws",
+      "desig": ""
+    },
+    {
+      "id": "2499046171",
+      "name": "MOHAMMMED MOHID",
+      "dept": "Mariem",
+      "sup": "Aziz Qaws",
+      "desig": ""
+    },
+    {
+      "id": "2443412040",
+      "name": "ABU BAKAUR SADDIQ",
+      "dept": "SAYYADI",
+      "sup": "Aziz Qaws",
+      "desig": ""
+    },
+    {
+      "id": "2041131745",
+      "name": "MD ALAM",
+      "dept": "SAYYADI",
+      "sup": "Aziz Qaws",
+      "desig": ""
+    },
+    {
+      "id": "2253871475",
+      "name": "zakria hossain dansuer",
+      "dept": "Mariem",
+      "sup": "Aziz Qaws",
+      "desig": ""
+    },
+    {
+      "id": "2185931843",
+      "name": "SAHEEN HOSSAIN MOMEN",
+      "dept": "Mariem",
+      "sup": "Aziz Qaws",
+      "desig": ""
+    },
+    {
+      "id": "2252542903",
+      "name": "KHABER MOLLA LIYAKTO ALI",
+      "dept": "Mariem",
+      "sup": "Aziz Qaws",
+      "desig": ""
+    },
+    {
+      "id": "2516793896",
+      "name": "AULAD",
+      "dept": "Mariem",
+      "sup": "Aziz Qaws",
+      "desig": ""
+    },
+    {
+      "id": "2509513798",
+      "name": "MD SOHAG",
+      "dept": "Mariem",
+      "sup": "Aziz Qaws",
+      "desig": ""
+    },
+    {
+      "id": "2521286134",
+      "name": "MD SAJJAD KHAN",
+      "dept": "MASEERAT AL NAMAA",
+      "sup": "Aziz Qaws",
+      "desig": ""
+    },
+    {
+      "id": "2444274167",
+      "name": "MD KANCHON HOSSAIN",
+      "dept": "Noora",
+      "sup": "Aziz Qaws",
+      "desig": ""
+    },
+    {
+      "id": "2440237812",
+      "name": "AZIZUL KHAN",
+      "dept": "Noora",
+      "sup": "Aziz Qaws",
+      "desig": ""
+    },
+    {
+      "id": "2507183149",
+      "name": "ROBAL AHMED",
+      "dept": "Mariem",
+      "sup": "Aziz Qaws",
+      "desig": ""
+    },
+    {
+      "id": "2518873472",
+      "name": "MOHAMMED SHAHID",
+      "dept": "Mariem",
+      "sup": "Fayez Kahil",
+      "desig": ""
+    },
+    {
+      "id": "2559426636",
+      "name": "MOHAMMED KASEM",
+      "dept": "Mariem",
+      "sup": "Fayez Kahil",
+      "desig": ""
+    },
+    {
+      "id": "2516803422",
+      "name": "MOHAMMED FIROZ",
+      "dept": "MASEERAT AL NAMAA",
+      "sup": "Fayez Kahil",
+      "desig": ""
+    },
+    {
+      "id": "2533781171",
+      "name": "MOHAMMED ZOHIB",
+      "dept": "Mariem",
+      "sup": "Fayez Kahil",
+      "desig": ""
+    },
+    {
+      "id": "2055305102",
+      "name": "MOHAMMED DAOOD",
+      "dept": "Mariem",
+      "sup": "Fayez Kahil",
+      "desig": ""
+    },
+    {
+      "id": "2561667771",
+      "name": "MD SAJIDUL HOQUE AKHANJEE",
+      "dept": "MASEERAT AL NAMAA",
+      "sup": "Fayez Kahil",
+      "desig": ""
+    },
+    {
+      "id": "2575391293",
+      "name": "MD  SEYAM BAPARY",
+      "dept": "MASEERAT AL NAMAA",
+      "sup": "Fayez Kahil",
+      "desig": ""
+    }
+  ],
+  "entries": [
+    {
+      "date": "2026-03-28",
+      "sup": "Chinmayee",
+      "wo": "602000199",
+      "stage": "Fabrication",
+      "emp": "Aziz Qaws",
+      "att": "Present",
+      "baseHrs": 8,
+      "ot": 0
+    },
+    {
+      "date": "2026-03-30",
+      "sup": "Chinmayee",
+      "wo": "602000201",
+      "stage": "Assembly",
+      "emp": "KHALID USMAN",
+      "att": "Present",
+      "baseHrs": 8,
+      "ot": 1
+    },
+    {
+      "date": "2026-04-01",
+      "sup": "Chinmayee",
+      "sn": "9",
+      "wo": "602000199",
+      "customer": "CVD / UCC",
+      "type": "18000 Lit Vacuum Tanker",
+      "stage": "Painting",
+      "emp": "MD MONIR",
+      "att": "Present",
+      "baseHrs": 8,
+      "ot": 0
+    }
+  ],
+  "issues": [
+    {
+      "id": "ISS-13903",
+      "date": "2026-03-28",
+      "wo": "602000200",
+      "dept": "Purchase",
+      "desc": "materiAL NOT AVAILABLE",
+      "priority": "High",
+      "by": "Production Engineer",
+      "status": "Open",
+      "remarks": ""
+    },
+    {
+      "id": "ISS-29144",
+      "date": "2026-03-28",
+      "wo": "602000199",
+      "dept": "Design",
+      "desc": "Drawing not available",
+      "priority": "High",
+      "by": "Production Engineer",
+      "status": "Open",
+      "remarks": ""
+    }
+  ],
+  "mhAlerts": [],
+  "supervisors": [
+    {
+      "name": "Chinmayee",
+      "role": "Production Supervisor",
+      "photo": null
+    },
+    {
+      "name": "Yousof Maarof",
+      "role": "Production Supervisor",
+      "photo": null
+    },
+    {
+      "name": "Iyad",
+      "role": "Production Supervisor",
+      "photo": null
+    },
+    {
+      "name": "Aziz Qaws",
+      "role": "Production Supervisor",
+      "photo": null
+    },
+    {
+      "name": "Fayez Kahil",
+      "role": "Production Supervisor",
+      "photo": null
+    }
+  ],
+  "departments": [
+    "QC",
+    "Purchase",
+    "Sales",
+    "Design"
+  ],
+  "cfg": {
+    "title": "Gorica Arabia Production Management Dashboard",
+    "company": "Gorica Arabia Limited",
+    "logo": "data:image/jpeg;base64,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",
+    "bgColor": "#1e429f",
+    "vehicleTypes": [
+      "Truck Trailer",
+      "Tanker",
+      "Tipper",
+      "Car Carrier",
+      "Waste Bin Carrier",
+      "Flatbed Semi-Trailer 38 TON",
+      "18000 Lit Vacuum Tanker",
+      "18000 Lit Water Tanker SS 304",
+      "18000 Lit Water Tanker/ Galvanized",
+      "Double Skip Loader",
+      "Curtain Side Single Deck Trailer",
+      "Flatbed Semi-Trailer 12.5 m",
+      "Cement Bulker 24 Cbm",
+      "GALVANIZED WATER TANK 27,000 L",
+      "SKELETAL Semi-Trailer",
+      "Dropside body",
+      "TIPPER BODY 16 CBM",
+      "TIPPER BODY 8 CBM on UD 4 x 2 Truck",
+      "BEVERAGE BODY 5.1 x 2.25 x 2.25 Mtr.",
+      "TIPPER BODY 5 CBM on UD 4 x 2 Truck",
+      "TIPPER BODY 4.5CBM on UD 4 x 2 Truck",
+      "Double Deck Curtain Side Semi-Trailer 15 m",
+      "Curtain side 13.6 M"
+    ],
+    "users": [
+      {
+        "username": "admin",
+        "pass": "admin123",
+        "role": "admin"
+      },
+      {
+        "username": "supervisor",
+        "pass": "sup123",
+        "role": "supervisor"
+      },
+      {
+        "username": "viewer",
+        "pass": "view123",
+        "role": "viewer"
+      },
+      {
+        "username": "mouath",
+        "pass": "Mouath123",
+        "role": "admin"
+      }
+    ]
+  }
+}
